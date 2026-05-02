@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberSec Study Hub</title>
+  <link rel="stylesheet" href="style/styles.css">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230d0f14'/><text x='50%25' y='54%25' font-size='18' text-anchor='middle' dominant-baseline='middle' fill='%234f8ef7' font-family='monospace' font-weight='bold'>CyberSec</text></svg>">
+</head>
+
+<body>
+
+  <!-- ════════════════════════════════════════════════════════ -->
+  <!--  SPLASH SCREEN                                          -->
+  <!-- ════════════════════════════════════════════════════════ -->
+  <div id="splash" role="button" tabindex="0" aria-label="Click to enter CyberSec Study Hub">
+    <div class="splash-grid"></div>
+    <div class="splash-glow"></div>
+    <div class="splash-glow splash-glow-2"></div>
+    <div class="splash-content">
+      <div class="splash-eyebrow">✦ Your Personal Study Companion ✦</div>
+      <h1 class="splash-title">Welcome to<br><span>CyberSec Study Hub</span></h1>
+      <p class="splash-subtitle">Notes · Flashcards · Summaries — everything you need to revise, practise, and master
+        your coursework.</p>
+      <div class="splash-courses">
+        <span class="splash-course-pill crypto">Cryptography</span>
+        <span class="splash-course-pill forensics">Cyber Forensics</span>
+        <span class="splash-course-pill networks">Computer Networks</span>
+        <span class="splash-course-pill cloud">Cloud Computing</span>
+        <span class="splash-course-pill oop">OOP with Java</span>
+      </div>
+      <div class="splash-cta"><span class="splash-cta-line"></span>click anywhere to enter<span
+          class="splash-cta-line"></span></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════ -->
+  <!--  APP LAYOUT                                             -->
+  <!-- ════════════════════════════════════════════════════════ -->
+  <div class="layout" id="appLayout">
+
+    <!-- Mobile top bar -->
+    <div class="mobile-header">
+      <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+      <span class="mobile-title" id="mobileTitle">CyberSec Study Hub</span>
+      <div style="width:40px"></div>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="sidebar-header">
+        <div class="sidebar-logo-row">
+          <div class="sidebar-logo-mark">CyberSec</div>
+          <div>
+            <div class="sidebar-logo">Study Hub</div>
+            <div class="sidebar-sub" id="sidebarSub">5 courses · click to explore</div>
+          </div>
+        </div>
+        <div class="sidebar-title" id="sidebarTitle">All Courses</div>
+      </div>
+
+      <!-- Search bar -->
+      <div class="sidebar-search">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="topicSearch" placeholder="Search topics…" oninput="filterNav(this.value)"
+          autocomplete="off">
+      </div>
+
+      <!-- This Semester -->
+      <div class="nav-section-label">This Semester</div>
+      <div class="course-tabs" id="currentTabs">
+        <div class="course-tab active" data-course="home" onclick="switchCourse('home',this)">
+          <div class="course-dot home-dot"></div>
+          <span class="course-tab-name">All Courses</span>
+        </div>
+        <div class="course-tab" data-course="crypto" onclick="switchCourse('crypto',this)">
+          <div class="course-dot"></div>
+          <span class="course-tab-name">Cryptography</span>
+          <span class="course-badge">5</span>
+        </div>
+        <div class="course-tab" data-course="forensics" onclick="switchCourse('forensics',this)">
+          <div class="course-dot"></div>
+          <span class="course-tab-name">Cyber Forensics</span>
+          <span class="course-badge">5</span>
+        </div>
+        <div class="course-tab" data-course="networks" onclick="switchCourse('networks',this)">
+          <div class="course-dot"></div>
+          <span class="course-tab-name">Computer Networks</span>
+          <span class="course-badge">5</span>
+        </div>
+        <div class="course-tab" data-course="cloud" onclick="switchCourse('cloud',this)">
+          <div class="course-dot"></div>
+          <span class="course-tab-name">Cloud Computing</span>
+          <span class="course-badge">5</span>
+        </div>
+        <div class="course-tab" data-course="oop" onclick="switchCourse('oop',this)">
+          <div class="course-dot"></div>
+          <span class="course-tab-name">OOP with Java</span>
+          <span class="course-badge">7</span>
+        </div>
+      </div>
+
+      <!-- Next Semester -->
+      <div class="nav-section-label next-sem-label">Next Semester</div>
+      <div class="course-tabs" id="nextTabs">
+        <div class="course-tab coming" data-course="softeng" onclick="switchCourse('softeng',this)">
+          <div class="course-dot" style="background:#34d399"></div>
+          <span class="course-tab-name">Software Engineering</span>
+          <span class="course-badge soon-badge">soon</span>
+        </div>
+        <div class="course-tab coming" data-course="databases" onclick="switchCourse('databases',this)">
+          <div class="course-dot" style="background:#fb923c"></div>
+          <span class="course-tab-name">Database Systems</span>
+          <span class="course-badge soon-badge">soon</span>
+        </div>
+        <div class="course-tab coming" data-course="os" onclick="switchCourse('os',this)">
+          <div class="course-dot" style="background:#e879f9"></div>
+          <span class="course-tab-name">Operating Systems</span>
+          <span class="course-badge soon-badge">soon</span>
+        </div>
+        <div class="course-tab coming" data-course="webdev" onclick="switchCourse('webdev',this)">
+          <div class="course-dot" style="background:#38bdf8"></div>
+          <span class="course-tab-name">Web Development</span>
+          <span class="course-badge soon-badge">soon</span>
+        </div>
+        <div class="course-tab coming" data-course="dsa" onclick="switchCourse('dsa',this)">
+          <div class="course-dot" style="background:#f87171"></div>
+          <span class="course-tab-name">Data Structures &amp; Algo</span>
+          <span class="course-badge soon-badge">soon</span>
+        </div>
+      </div>
+
+      <!-- View switcher -->
+      <div class="view-switcher" id="viewSwitcher" style="display:none">
+        <button class="vsw-btn active" onclick="setView('notes',this)">Notes</button>
+        <button class="vsw-btn" onclick="setView('qa',this)">Q&amp;A</button>
+        <button class="vsw-btn" onclick="setView('summary',this)">Cards</button>
+      </div>
+
+      <!-- Topic progress bar -->
+      <div class="topic-progress" id="topicProgress" style="display:none">
+        <div class="tp-label" id="tpLabel">Topic 1 of 7</div>
+        <div class="tp-bar">
+          <div class="tp-fill" id="tpFill"></div>
+        </div>
+      </div>
+
+      <!-- Nav list -->
+      <ul class="nav-list" id="navList"></ul>
+
+      <div class="sidebar-footer">
+        <span>CyberSec Study Hub</span>
+        <span class="sf-dot">·</span>
+        <span id="footerYear"></span>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" id="mainContent"></main>
+
+  </div>
+
+  <script src="script/app.js"></script>
+</body>
+
+</html>

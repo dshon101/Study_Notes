@@ -1,0 +1,693 @@
+{
+  "crypto": {
+    "name": "Cryptography",
+    "accent": "#4f8ef7",
+    "accent2": "#7c5af0",
+    "accent3": "#2dd4b6",
+    "topics": [
+      {
+        "short": "Intro to Cryptography",
+        "subtitle": "1.1 History · 1.2 Goals · 1.3 Basic Terminology · 1.4 Applications",
+        "notes": [
+          { "title": "History", "body": "Cryptography dates back to ~1900 BC (ancient Egypt). Julius Caesar used simple letter substitution. The Vigenère cipher (1553) dominated for centuries. WWII Enigma machine prompted Alan Turing's codebreaking at Bletchley Park. Modern era began in 1976 with Diffie &amp; Hellman's landmark public-key paper, followed by RSA (1977)." },
+          { "title": "Goals (CIA + Non-repudiation)", "body": "<ul><li><strong>Confidentiality</strong> — only authorised parties can read data</li><li><strong>Integrity</strong> — data has not been altered in transit</li><li><strong>Authentication</strong> — verifying the identity of parties</li><li><strong>Non-repudiation</strong> — sender cannot deny sending a message</li></ul>" },
+          { "title": "Basic Terminology", "body": "<ul><li><strong>Plaintext (P)</strong> — original readable message</li><li><strong>Ciphertext (C)</strong> — encrypted output</li><li><strong>Encryption</strong> — C = E(K, P)</li><li><strong>Decryption</strong> — P = D(K, C)</li><li><strong>Key (K)</strong> — secret parameter controlling the cipher</li></ul>" },
+          { "title": "Kerckhoffs's Principle", "body": "A cryptographic system should be secure even if everything about the system, except the key, is public knowledge. Security must NOT rely on keeping the algorithm secret." }
+        ],
+        "summary": "Cryptography secures information through mathematical transformations. Four core goals: Confidentiality, Integrity, Authentication, Non-repudiation. The key is secret; the algorithm is public (Kerckhoffs).",
+        "sumCards": [
+          { "label": "Core Goals", "content": "Confidentiality · Integrity · Authentication · Non-repudiation" },
+          { "label": "Key Equation", "content": "Encrypt: C = E(K,P)\nDecrypt: P = D(K,C)" },
+          { "label": "Timeline", "content": "1900 BC → Caesar → Enigma → 1976 DH → RSA → AES" },
+          { "label": "Applications", "content": "HTTPS · PGP · VPN · Signatures · Blockchain · Passwords" }
+        ],
+        "qa": [
+          { "q": "What are the four main goals of cryptography? Give a real-world example of each.", "a": "Confidentiality (encrypted WhatsApp messages), Integrity (file checksums), Authentication (login passwords), Non-repudiation (digitally signed contracts)." },
+          { "q": "Explain Kerckhoffs's Principle and why it matters.", "a": "The system must remain secure even when the algorithm is fully public. Only the key is secret. This ensures security doesn't depend on obscurity — algorithms can be publicly scrutinised for weaknesses." },
+          { "q": "What is the difference between encryption and hashing?", "a": "Encryption is reversible with the correct key: C = E(K,P) and P = D(K,C). Hashing is one-way: H(P) → fixed digest. Hashes are used for integrity checks and password storage; encryption for confidentiality of data that must be recovered." },
+          { "q": "Name three real-world applications of cryptography.", "a": "1) HTTPS/TLS — encrypts web traffic. 2) PGP — end-to-end email encryption. 3) bcrypt/Argon2 — secure password storage using salted hashing." },
+          { "q": "Describe one historical example where breaking a cipher changed history.", "a": "Breaking the German Enigma at Bletchley Park (WWII) allowed the Allies to decode German military communications, significantly shortening the war. Alan Turing led the effort, creating the Bombe machine." }
+        ]
+      },
+      {
+        "short": "Symmetric Encryption",
+        "subtitle": "2.1 Block Ciphers · 2.2 DES · 2.3 AES · 2.4 Modes of Operation",
+        "notes": [
+          { "title": "Block Ciphers", "body": "Operate on fixed-size blocks of plaintext (e.g., 64-bit DES, 128-bit AES). Use multiple rounds of substitution and permutation. Key properties: <strong>Confusion</strong> (obscure relationship between key and ciphertext via S-boxes) and <strong>Diffusion</strong> (spread plaintext influence across ciphertext via permutations)." },
+          { "title": "DES (Data Encryption Standard)", "body": "56-bit key, 64-bit blocks, 16 rounds Feistel structure. Standardised 1977. Now considered <strong>insecure</strong> — key too short (brute-forced in 22 hours in 1999). 3DES applies DES three times for extended life but is slow." },
+          { "title": "AES (Advanced Encryption Standard)", "body": "128-bit block, keys of 128/192/256 bits. Substitution-Permutation Network. Rounds: 10/12/14 depending on key size. Operations: SubBytes (S-box), ShiftRows, MixColumns, AddRoundKey. Currently the global standard — used in TLS, Wi-Fi (WPA2), disk encryption." },
+          { "title": "Modes of Operation", "body": "<ul><li><strong>ECB</strong> — same block → same ciphertext (insecure, reveals patterns)</li><li><strong>CBC</strong> — XOR with previous ciphertext before encrypting; needs random IV</li><li><strong>CTR</strong> — turns block cipher into stream cipher using counter; parallelisable</li><li><strong>GCM</strong> — CTR + GHASH authentication; provides both encryption and integrity</li></ul>" }
+        ],
+        "summary": "Symmetric encryption uses one shared key. AES is the modern standard — 128-bit blocks, up to 256-bit keys. Modes of operation (CBC, CTR, GCM) determine how blocks are chained. Never use ECB for real data.",
+        "sumCards": [
+          { "label": "DES vs AES", "content": "DES: 56-bit key, broken\nAES: 128/192/256-bit, secure" },
+          { "label": "AES Operations", "content": "SubBytes · ShiftRows · MixColumns · AddRoundKey" },
+          { "label": "Block Modes", "content": "ECB: insecure · CBC: IV needed · CTR: parallel · GCM: auth" },
+          { "label": "Confusion/Diffusion", "content": "Confusion: S-boxes hide key\nDiffusion: permutations spread plaintext" }
+        ],
+        "qa": [
+          { "q": "Why is ECB mode considered insecure?", "a": "In ECB, identical plaintext blocks encrypt to identical ciphertext blocks. This leaks patterns in the data — the classic example is an ECB-encrypted image where the outline of the original image is still visible in the ciphertext." },
+          { "q": "What are the key sizes for AES and how many rounds does each use?", "a": "AES-128: 10 rounds; AES-192: 12 rounds; AES-256: 14 rounds. Block size is always 128 bits regardless of key size." },
+          { "q": "Why was DES replaced by AES?", "a": "DES uses a 56-bit key, giving only 2^56 ≈ 72 trillion possible keys. In 1999, the EFF's Deep Crack machine brute-forced DES in under 22 hours. The key space is simply too small for modern computing." },
+          { "q": "What does GCM mode provide that pure CTR does not?", "a": "GCM adds authenticated encryption: it produces an authentication tag (GHASH) alongside the ciphertext. This detects any tampering with the ciphertext. CTR alone only provides confidentiality, not integrity." },
+          { "q": "Explain the role of the IV in CBC mode.", "a": "The Initialisation Vector (IV) is XORed with the first plaintext block before encryption. It must be random and unique for each message. Without a random IV, identical messages produce identical ciphertext at the start, leaking information about repeated messages." }
+        ]
+      },
+      {
+        "short": "Asymmetric Cryptography & RSA",
+        "subtitle": "3.1 Public-Key Concepts · 3.2 RSA · 3.3 Key Exchange",
+        "notes": [
+          { "title": "Public-Key Cryptography", "body": "Each party has a key pair: <strong>public key</strong> (freely shared) and <strong>private key</strong> (secret). Anyone can encrypt with the public key; only the private key holder can decrypt. Solves the key distribution problem of symmetric cryptography." },
+          { "title": "RSA", "body": "Based on the difficulty of factoring large composites. Key generation: choose large primes p, q; n=pq; φ(n)=(p-1)(q-1); choose e coprime to φ(n); d = e⁻¹ mod φ(n). Encrypt: C = M^e mod n. Decrypt: M = C^d mod n. Security requires n ≥ 2048 bits." },
+          { "title": "Diffie-Hellman Key Exchange", "body": "Two parties agree on g and p. Alice sends g^a mod p, Bob sends g^b mod p. Shared secret = g^(ab) mod p. An eavesdropper sees g^a and g^b but computing g^(ab) requires solving the discrete logarithm problem — computationally infeasible for large p." }
+        ],
+        "summary": "Public-key cryptography uses key pairs. RSA relies on factoring hardness; Diffie-Hellman on the discrete logarithm problem. These algorithms solve key distribution but are much slower than symmetric ciphers.",
+        "sumCards": [
+          { "label": "RSA Formula", "content": "Encrypt: C = M^e mod n\nDecrypt: M = C^d mod n" },
+          { "label": "Key Generation", "content": "n = pq · φ(n) = (p-1)(q-1) · d = e⁻¹ mod φ(n)" },
+          { "label": "DH Exchange", "content": "Shared secret = g^(ab) mod p\nSecurity: discrete log problem" },
+          { "label": "Use Cases", "content": "RSA: key wrapping, signatures · DH: TLS key exchange" }
+        ],
+        "qa": [
+          { "q": "What mathematical problem does RSA security rely on?", "a": "The integer factorisation problem. Given n = pq where p and q are large primes, it is computationally infeasible to recover p and q from n alone." },
+          { "q": "Encrypt M=7 using RSA with e=3, n=33.", "a": "C = 7^3 mod 33 = 343 mod 33. 343 = 10×33 + 13, so C = 13." },
+          { "q": "Why is RSA alone not used to encrypt large files?", "a": "RSA is very slow compared to symmetric ciphers. In practice, RSA encrypts a small symmetric key (AES-256), and AES encrypts the actual data — hybrid encryption." },
+          { "q": "What does 'perfect forward secrecy' mean and which protocol provides it?", "a": "PFS means compromise of the long-term private key does not compromise past session keys. Ephemeral Diffie-Hellman (ECDHE) in TLS generates a fresh key pair for each session." },
+          { "q": "Compare symmetric and asymmetric cryptography on speed and key management.", "a": "Symmetric (AES): very fast, requires pre-shared secret. Asymmetric (RSA): 100–1000x slower, but solves key distribution. Modern systems use hybrid encryption." }
+        ]
+      },
+      {
+        "short": "Hash Functions & Digital Signatures",
+        "subtitle": "4.1 Hash Properties · 4.2 SHA Family · 4.3 Digital Signatures · 4.4 PKI",
+        "notes": [
+          { "title": "Cryptographic Hash Properties", "body": "<ul><li><strong>Pre-image resistance</strong>: given H(x), cannot find x</li><li><strong>Second pre-image resistance</strong>: given x, cannot find x' ≠ x with H(x) = H(x')</li><li><strong>Collision resistance</strong>: cannot find any x, x' where H(x) = H(x')</li><li><strong>Avalanche effect</strong>: 1-bit change in input → ~50% bits flip in output</li></ul>" },
+          { "title": "SHA Family", "body": "MD5 (128-bit): broken, collisions found. SHA-1 (160-bit): deprecated, collisions demonstrated (2017 SHAttered). <strong>SHA-256/SHA-3</strong>: current standards. SHA-256 widely used in TLS, Bitcoin. SHA-3 is based on Keccak sponge construction." },
+          { "title": "Digital Signatures", "body": "Sign with private key: σ = Sign(SK, H(M)). Verify with public key: Verify(PK, M, σ). Provides: <strong>authentication</strong>, <strong>integrity</strong>, <strong>non-repudiation</strong>. RSA-PSS and ECDSA are standard schemes." },
+          { "title": "PKI & Certificates", "body": "A <strong>Certificate Authority (CA)</strong> issues X.509 certificates binding a public key to an identity. Chain of trust: root CA → intermediate CA → end-entity certificate. Revocation via CRL or OCSP." }
+        ],
+        "summary": "Hash functions provide one-way digests with collision resistance. SHA-256 is the current standard. Digital signatures combine hashing with asymmetric crypto for authentication, integrity, and non-repudiation. PKI manages certificate trust chains.",
+        "sumCards": [
+          { "label": "Hash Properties", "content": "Pre-image resist · 2nd pre-image · Collision resist · Avalanche" },
+          { "label": "SHA Status", "content": "MD5: broken · SHA-1: deprecated · SHA-256/SHA-3: current" },
+          { "label": "Digital Signature", "content": "Sign: σ = Sign(SK, H(M))\nVerify: Verify(PK, M, σ)" },
+          { "label": "PKI Trust Chain", "content": "Root CA → Intermediate CA → End-entity cert" }
+        ],
+        "qa": [
+          { "q": "What is the avalanche effect and why is it important?", "a": "A single bit change in input causes approximately 50% of output bits to change unpredictably. This means an attacker cannot make controlled small changes to a message and predict the hash change." },
+          { "q": "Why was SHA-1 deprecated?", "a": "In 2017, Google researchers demonstrated the first SHA-1 collision (SHAttered attack) — two different PDF files with the same SHA-1 hash. All modern systems require SHA-256 or higher." },
+          { "q": "How do digital signatures provide non-repudiation?", "a": "Only the holder of the private key can produce a valid signature. If Alice signs a document with her private key and the signature verifies, she cannot deny signing it." },
+          { "q": "What is the birthday attack and how does it relate to hash security?", "a": "The birthday paradox shows collisions can be found in O(2^(n/2)) operations. For a 256-bit hash, collision resistance requires O(2^128) — still secure." },
+          { "q": "Describe the chain of trust in PKI.", "a": "A root CA (pre-installed in OS/browser) signs intermediate CA certificates, which sign end-entity certificates. If any link breaks or a CA is compromised, the whole chain fails." }
+        ]
+      },
+      {
+        "short": "Attacks on Cryptographic Systems",
+        "subtitle": "5.1 Brute-Force · 5.2 Replay · 5.3 Chosen-Plaintext/Ciphertext · 5.4 Side-Channel",
+        "notes": [
+          { "title": "Brute-Force Attacks", "body": "Try every possible key until correct plaintext found. Complexity: O(2^k). AES-128 at 10^18 attempts/second takes longer than the age of the universe. Defence: large key sizes." },
+          { "title": "Replay Attacks", "body": "Attacker captures a valid authentication message and retransmits it later. Defence: <strong>nonces</strong> (numbers used once), <strong>timestamps</strong>, sequence numbers — ensure each transaction is unique and time-limited." },
+          { "title": "Chosen-Plaintext/Ciphertext Attacks", "body": "<ul><li><strong>CPA</strong>: attacker obtains encryptions of chosen plaintexts. Modern ciphers must achieve IND-CPA (semantic security).</li><li><strong>CCA2</strong>: attacker can also query decryption oracle. IND-CCA2 is the strongest notion. RSA-OAEP achieves it; textbook RSA does not.</li></ul>" },
+          { "title": "Side-Channel Attacks", "body": "<ul><li><strong>Timing</strong>: measure execution time to extract key bits</li><li><strong>Power analysis (DPA)</strong>: measure power consumption of smart card during AES</li><li><strong>Padding oracle</strong>: exploit error messages to decrypt byte-by-byte (POODLE on SSL3)</li><li><strong>Birthday attack</strong>: find hash collisions in O(2^(n/2))</li></ul>" }
+        ],
+        "summary": "Attacks range from brute-force to adaptive chosen-ciphertext. Nonces and timestamps prevent replay. IND-CCA2 is the gold standard for cipher security. Side-channel attacks bypass mathematics via physical implementation leaks.",
+        "sumCards": [
+          { "label": "Brute-force", "content": "Try all 2^k keys · Defeated by large keys · AES-128: safe" },
+          { "label": "Replay", "content": "Reuse captured message · Defence: nonces + timestamps" },
+          { "label": "CPA / CCA2", "content": "CPA: chosen plaintexts · CCA2: + decryption oracle · Goal: IND-CCA2" },
+          { "label": "Side-channel", "content": "Timing · Power (DPA) · EM · POODLE padding oracle" }
+        ],
+        "qa": [
+          { "q": "What is a replay attack? Give a concrete example.", "a": "A replay attack captures a legitimate authentication message and retransmits it to gain access. Example: capturing a Kerberos ticket and replaying it to authenticate as the victim. Defence: nonces ensure each session is unique." },
+          { "q": "What is a padding oracle attack?", "a": "A padding oracle reports whether decrypted CBC plaintext has valid PKCS#7 padding. An attacker modifies ciphertext byte-by-byte until the oracle returns 'valid padding', revealing the plaintext via XOR. POODLE (2014) exploited this in SSL 3.0." },
+          { "q": "Why is IND-CCA2 a stronger security notion than IND-CPA?", "a": "IND-CPA means the attacker cannot distinguish encryptions of two chosen messages. IND-CCA2 additionally allows querying a decryption oracle for any ciphertext except the target, modelling real-world attackers who observe system responses to tampered ciphertexts." },
+          { "q": "Describe a timing side-channel attack on RSA.", "a": "Paul Kocher (1996) showed RSA implementations that use non-constant-time modular exponentiation leak key bits through timing differences. Statistical analysis of many decryption timings can reveal the private key without breaking RSA mathematically." },
+          { "q": "What is Differential Power Analysis (DPA)?", "a": "DPA measures power consumption of a cryptographic device during AES execution. Power drawn correlates with the Hamming weight of intermediate values. By correlating power traces with hypothetical key bytes, attackers extract the full AES key." }
+        ]
+      }
+    ]
+  },
+
+  "forensics": {
+    "name": "Cyber Forensics",
+    "accent": "#f76f6f",
+    "accent2": "#f5a623",
+    "accent3": "#ffd166",
+    "topics": [
+      {
+        "short": "Introduction to Cyber Forensics",
+        "subtitle": "1.1 Definition · 1.2 Principles · 1.3 Legal Framework · 1.4 Chain of Custody",
+        "notes": [
+          { "title": "What is Cyber Forensics?", "body": "Cyber (digital) forensics is the <strong>scientific collection, preservation, analysis, and presentation</strong> of digital evidence from computers, networks, storage media, and electronic devices — in a manner legally admissible in court." },
+          { "title": "Core Principles", "body": "<ul><li><strong>Locard's Exchange Principle</strong>: every interaction leaves a trace. Digital crimes leave artefacts in logs, metadata, memory, slack space.</li><li><strong>Integrity</strong>: evidence must not be altered. Use write-blockers and cryptographic hashes (SHA-256) to verify.</li><li><strong>Reproducibility</strong>: a second forensic examiner with the same evidence must reach the same conclusions.</li><li><strong>Documentation</strong>: every action must be recorded with timestamps.</li></ul>" },
+          { "title": "Chain of Custody", "body": "A documented record of <strong>who handled the evidence, when, and what was done</strong>. Any break in the chain can render evidence inadmissible. Includes: collection date/time, name of collector, storage conditions, transfer records, access logs." },
+          { "title": "Legal Framework", "body": "Evidence must be: <strong>Admissible</strong> (legally obtained), <strong>Authentic</strong> (proven to be what it claims), <strong>Complete</strong> (full picture, not cherry-picked), <strong>Reliable</strong> (tools and methods accepted by courts)." }
+        ],
+        "summary": "Cyber forensics applies scientific methods to digital evidence collection, preservation, and analysis for legal proceedings. Chain of custody, integrity, and reproducibility are non-negotiable principles.",
+        "sumCards": [
+          { "label": "Four Pillars", "content": "Collection · Preservation · Analysis · Presentation" },
+          { "label": "Chain of Custody", "content": "Who · What · When · Where · How — documented at every step" },
+          { "label": "Evidence Admissibility", "content": "Admissible · Authentic · Complete · Reliable" },
+          { "label": "Locard's Principle", "content": "Every interaction leaves a trace — digital artefacts always remain" }
+        ],
+        "qa": [
+          { "q": "What is chain of custody and why is it critical in digital forensics?", "a": "Chain of custody is the documented, chronological record of everyone who handled the evidence, when, and what was done. Without an unbroken chain, defence attorneys can argue evidence was tampered with, making it inadmissible in court." },
+          { "q": "How do forensic investigators ensure a disk image hasn't been altered?", "a": "Before imaging, compute a SHA-256 hash of the original media using a hardware write-blocker. After imaging, compute the hash of the image. If both hashes match, the image is an exact bit-for-bit copy." },
+          { "q": "Explain Locard's Exchange Principle in a digital context.", "a": "Accessing a website leaves server logs and browser history; sending an email leaves SMTP headers; running malware modifies registry keys and creates prefetch files. These artefacts persist even after attempts to delete them." },
+          { "q": "What four criteria must digital evidence meet to be admissible in court?", "a": "1) Admissible — collected legally. 2) Authentic — provably related to the incident (hashes). 3) Complete — the full picture is presented. 4) Reliable — using validated, court-accepted forensic tools." },
+          { "q": "What is a write-blocker and when must it be used?", "a": "A write-blocker prevents any writes to a storage medium while allowing reads. It must be used before connecting any suspect drive to a forensic workstation — without it, simply mounting a drive writes timestamps, contaminating evidence." }
+        ]
+      },
+      {
+        "short": "Digital Evidence & Acquisition",
+        "subtitle": "2.1 Types of Evidence · 2.2 Volatile Data · 2.3 Disk Imaging · 2.4 Tools",
+        "notes": [
+          { "title": "Types of Digital Evidence", "body": "<ul><li><strong>Volatile</strong>: RAM contents, running processes, network connections — lost when power off</li><li><strong>Non-volatile</strong>: hard disk, SSD, USB drives, optical media, cloud storage</li><li><strong>Network evidence</strong>: firewall logs, IDS alerts, PCAP captures, DNS queries</li><li><strong>Application evidence</strong>: browser history, emails, chat logs, documents</li></ul>" },
+          { "title": "Order of Volatility (RFC 3227)", "body": "Collect in order from most to least volatile: 1) CPU registers &amp; cache, 2) RAM, 3) Network state, 4) Running processes, 5) Disk contents, 6) Remote logs, 7) Archived/backup media. Failure to capture volatile data first means it is lost forever." },
+          { "title": "Disk Imaging", "body": "Create a bit-for-bit forensic copy of the entire disk, including deleted files, slack space, and unallocated clusters. Tools: <strong>dd</strong> (Linux), <strong>FTK Imager</strong>, <strong>Guymager</strong>. Formats: E01 (includes case metadata), RAW/DD, AFF4. Always verify with hash." },
+          { "title": "Key Forensic Tools", "body": "<ul><li><strong>Autopsy / Sleuth Kit</strong>: open-source disk/file analysis platform</li><li><strong>Volatility</strong>: RAM dump analysis (processes, network sockets, malware artefacts)</li><li><strong>Wireshark</strong>: network packet capture and analysis</li><li><strong>FTK (Forensic Toolkit)</strong>: commercial all-in-one forensic platform</li><li><strong>EnCase</strong>: enterprise-grade forensic software, court-accepted</li></ul>" }
+        ],
+        "summary": "Collect volatile evidence first (RAM → processes → disk). Disk imaging creates exact bit-for-bit copies verified by cryptographic hashes. Use write-blockers to preserve integrity. Autopsy, Volatility, and Wireshark are core open-source tools.",
+        "sumCards": [
+          { "label": "Order of Volatility", "content": "Registers → RAM → Network → Processes → Disk → Backups" },
+          { "label": "Disk Image Formats", "content": "RAW/DD · E01 (EnCase) · AFF4 — all verified by SHA-256" },
+          { "label": "Key Tools", "content": "Autopsy · Volatility · Wireshark · FTK · EnCase · dd" },
+          { "label": "Evidence Types", "content": "Volatile (RAM) · Non-volatile (disk) · Network (PCAP) · Application logs" }
+        ],
+        "qa": [
+          { "q": "Why must RAM be acquired before the hard disk in an investigation?", "a": "RAM is volatile — its contents are permanently lost when the system is powered off. RAM may contain encryption keys, running malware code, plaintext credentials, and open network connections. Disk contents persist and can be imaged later." },
+          { "q": "What is 'slack space' and why is it forensically significant?", "a": "Slack space is the unused area between the end of a file and the end of its allocated disk cluster. Old data from previous files may reside there. Forensic tools like Autopsy recover data from slack space." },
+          { "q": "Describe the process of creating and verifying a forensic disk image.", "a": "1) Connect drive via hardware write-blocker. 2) Compute SHA-256 hash of source. 3) Use FTK Imager or dd to create image. 4) Compute SHA-256 of image. 5) Compare hashes — if identical, image is verified. Document all steps." },
+          { "q": "What information can Volatility extract from a RAM dump?", "a": "Running processes and parent relationships, loaded DLLs and kernel modules, open network connections, registry hives, plaintext passwords, injected shellcode, and malware that hides from the file system." },
+          { "q": "What is the difference between RAW/DD and E01 forensic image formats?", "a": "RAW/DD is a plain bit-for-bit copy with no metadata. E01 (Expert Witness Format) is compressed and embeds case metadata (examiner name, date, notes), segment-level checksums, and supports compression — more practical for storage and court presentation." }
+        ]
+      },
+      {
+        "short": "File System Forensics",
+        "subtitle": "3.1 FAT32 & NTFS · 3.2 File Recovery · 3.3 Metadata · 3.4 Deleted Files",
+        "notes": [
+          { "title": "FAT32 File System", "body": "File Allocation Table uses a table of cluster numbers to track file storage. Directory entries store filename, size, first cluster, and timestamps. When a file is deleted, only the directory entry is marked free — data remains on disk until overwritten." },
+          { "title": "NTFS (New Technology File System)", "body": "Windows default. Uses the <strong>Master File Table (MFT)</strong> — every file and directory has an MFT entry with all attributes: $FILE_NAME (timestamps), $DATA (content), $SECURITY_DESCRIPTOR. Journaling ($LogFile, $UsnJrnl) records changes — forensic goldmine." },
+          { "title": "File Recovery (Carving)", "body": "<strong>File carving</strong> reconstructs files from unallocated space by searching for known file headers (magic bytes) and footers. Examples: JPEG starts with FF D8 FF; PDF with 25 50 44 46. Tools: <strong>Scalpel</strong>, <strong>PhotoRec</strong>. Works even without a file system." },
+          { "title": "Metadata & Timestamps", "body": "Files have multiple timestamps: <strong>MACE</strong> = Modified, Accessed, Created, Entry Modified (MFT). Attackers may use timestomping to cover tracks. $FILE_NAME timestamps are harder to forge as they are updated by the kernel." }
+        ],
+        "summary": "NTFS MFT records all file metadata; deleted files remain on disk until overwritten. File carving recovers data from unallocated space using magic bytes. MACE timestamps and NTFS journals are critical forensic artefacts.",
+        "sumCards": [
+          { "label": "FAT vs NTFS", "content": "FAT: table + directory entries\nNTFS: MFT with all attributes + journaling" },
+          { "label": "File Recovery", "content": "Carving: header/footer magic bytes · Tools: Scalpel, PhotoRec" },
+          { "label": "MACE Timestamps", "content": "Modified · Accessed · Created · MFT Entry Modified" },
+          { "label": "NTFS Journals", "content": "$LogFile: FS changes · $UsnJrnl: file-level change history" }
+        ],
+        "qa": [
+          { "q": "Why can deleted files often be recovered from FAT32 file systems?", "a": "In FAT32, deleting a file only marks the first character of its directory entry with 0xE5 and marks the FAT entries as free. The actual data clusters are not zeroed out until reused by a new file." },
+          { "q": "What is file carving and how does it work without file system metadata?", "a": "File carving searches raw disk bytes for known file signatures (magic bytes). E.g., JPEG: FF D8 FF at start, FF D9 at end. The tool extracts bytes between matching header and footer pairs, reconstructing the file without directory entries." },
+          { "q": "What is timestomping and how can it be detected?", "a": "Timestomping manipulates file timestamps to hide when a file was created or modified. Detection: compare $STANDARD_INFORMATION timestamps with $FILE_NAME timestamps — the kernel updates $FILE_NAME during operations, making it harder to forge." },
+          { "q": "Explain the forensic value of the NTFS $UsnJrnl journal.", "a": "The $UsnJrnl records every file system change: creates, renames, deletes, attribute changes — with timestamps. It maintains a history spanning days or weeks, revealing what files were created, accessed, or deleted during the investigation window." },
+          { "q": "A suspect's NTFS drive shows a file created at 2024-03-15 and last modified at 2022-01-01. What might this indicate?", "a": "A file cannot be modified before it is created — a modification date earlier than the creation date is a strong indicator of timestomping. Examine $FILE_NAME timestamps and $UsnJrnl for the true activity timeline." }
+        ]
+      },
+      {
+        "short": "Network Forensics",
+        "subtitle": "4.1 Packet Capture · 4.2 Log Analysis · 4.3 Intrusion Artefacts · 4.4 Wireshark",
+        "notes": [
+          { "title": "Network Forensics Overview", "body": "Captures, records, and analyses network traffic to reconstruct events. Key goal: answer WHO communicated with WHOM, WHEN, and WHAT was transferred. Operates in catch-it-as-you-can or stop-look-listen modes." },
+          { "title": "Packet Capture (PCAP)", "body": "Full packet capture stores every frame. Tools: <strong>tcpdump</strong> (CLI), <strong>Wireshark</strong> (GUI). BPF (Berkeley Packet Filter) syntax for filtering: <code>tcp port 443</code>, <code>host 192.168.1.1</code>. PCAP files are standard evidence format." },
+          { "title": "Network Logs", "body": "<ul><li><strong>Firewall logs</strong>: allow/deny decisions, source/dest IP:port, timestamps</li><li><strong>IDS/IPS logs</strong>: Snort/Suricata alert signatures</li><li><strong>DNS logs</strong>: domain queries — reveal C2 communication</li><li><strong>DHCP logs</strong>: IP-to-MAC address mappings — identify which device used an IP at a given time</li></ul>" },
+          { "title": "Intrusion Artefacts in Traffic", "body": "Port scans: many SYN packets to sequential ports from one source. Exfiltration: large outbound transfers to unusual IPs. C2 beaconing: periodic outbound connections at regular intervals to a single host. DNS tunnelling: unusually long/encoded DNS queries." }
+        ],
+        "summary": "Network forensics reconstructs events from packet captures and logs. PCAP files capture full traffic; logs record connection metadata. DNS logs expose C2 domains; DHCP logs link IPs to physical devices.",
+        "sumCards": [
+          { "label": "PCAP Capture", "content": "tcpdump / Wireshark · BPF filters · Full-packet evidence" },
+          { "label": "Key Log Types", "content": "Firewall · IDS (Snort) · DNS · DHCP · Web proxy" },
+          { "label": "Attack Indicators", "content": "Port scan (SYN flood) · Exfil (large outbound) · C2 beacon (periodic)" },
+          { "label": "DNS Tunnelling", "content": "Encoded data in long DNS queries · Bypasses firewall · Detect via length anomalies" }
+        ],
+        "qa": [
+          { "q": "How can DHCP logs help identify a suspect's device?", "a": "DHCP logs record which MAC address was assigned a specific IP address at a given time. If a firewall log shows an attack from 192.168.1.105 at 14:32, the DHCP log reveals the MAC address that held that IP at that time, linking to a specific device." },
+          { "q": "What is C2 beaconing and how is it detected in network traffic?", "a": "C2 beaconing is when malware makes periodic outbound connections to an attacker's server at regular intervals. Detection: identify hosts with suspiciously regular connection intervals to external IPs using statistical analysis of connection timing." },
+          { "q": "A Wireshark capture shows hundreds of TCP SYN packets to different ports from one IP. What is happening?", "a": "This is a SYN scan (Nmap -sS). The attacker sends SYN packets to probe which ports are open. By never completing the three-way handshake, the attacker avoids leaving connection logs on some systems." },
+          { "q": "What is DNS tunnelling and why is it a forensic concern?", "a": "DNS tunnelling encodes data inside DNS query and response payloads. Because DNS traffic (port 53) is almost always permitted through firewalls, it bypasses content filters. Look for unusually long DNS query names and high-frequency queries to a single domain." },
+          { "q": "What does a network forensic analyst look for to detect data exfiltration?", "a": "Large outbound data volumes to external IPs (especially at off-hours), connections to known bad IPs or newly registered domains, uncommon ports, compressed/encrypted archives transferred via FTP or HTTP POST, sustained high-bandwidth sessions." }
+        ]
+      },
+      {
+        "short": "Incident Response & Reporting",
+        "subtitle": "5.1 IR Lifecycle · 5.2 Malware Analysis · 5.3 Forensic Report Writing · 5.4 Anti-forensics",
+        "notes": [
+          { "title": "Incident Response Lifecycle (NIST SP 800-61)", "body": "<ol style='padding-left:18px'><li><strong>Preparation</strong>: IR plan, tools, trained team</li><li><strong>Detection &amp; Analysis</strong>: identify the incident, scope it</li><li><strong>Containment</strong>: isolate affected systems to prevent spread</li><li><strong>Eradication</strong>: remove malware, close vulnerabilities</li><li><strong>Recovery</strong>: restore systems to normal operation, monitor</li><li><strong>Post-Incident Activity</strong>: lessons learned, update defences</li></ol>" },
+          { "title": "Malware Analysis", "body": "<strong>Static analysis</strong>: examine the malware without running it — strings, PE headers, imports, hash lookups (VirusTotal), disassembly (Ghidra, IDA Pro). <strong>Dynamic analysis</strong>: run malware in a sandbox (Cuckoo, Any.run) and observe behaviour: processes created, registry changes, network connections, files dropped." },
+          { "title": "Forensic Report Writing", "body": "A forensic report must include: <strong>Executive summary</strong> (non-technical), <strong>Methodology</strong> (tools, procedures), <strong>Findings</strong> (evidence, timeline), <strong>Conclusions</strong> (opinion of the analyst), <strong>Appendices</strong> (hash values, tool output, chain of custody). Must be clear, objective, and reproducible." },
+          { "title": "Anti-Forensics Techniques", "body": "<ul><li><strong>Secure deletion</strong>: overwrite data (Eraser, shred)</li><li><strong>Encryption</strong>: BitLocker, VeraCrypt — RAM acquisition may yield keys</li><li><strong>Timestomping</strong>: modify timestamps — detected via $FILE_NAME</li><li><strong>Log clearing</strong>: wipe Windows Event Logs — Volume Shadow Copies may retain evidence</li><li><strong>Steganography</strong>: hide data inside images/audio</li></ul>" }
+        ],
+        "summary": "IR follows the NIST 6-phase lifecycle. Malware analysis combines static (Ghidra) and dynamic (sandbox) techniques. Forensic reports must be objective, reproducible, and court-ready. Anti-forensic techniques can be countered with thorough volatile evidence collection.",
+        "sumCards": [
+          { "label": "IR Phases (NIST)", "content": "Prep → Detect → Contain → Eradicate → Recover → Post-Incident" },
+          { "label": "Malware Analysis", "content": "Static: strings/disassembly · Dynamic: sandbox (Cuckoo, Any.run)" },
+          { "label": "Forensic Report", "content": "Exec Summary · Methodology · Findings · Conclusions · Appendices" },
+          { "label": "Anti-Forensics", "content": "Secure delete · Encryption · Timestomp · Log clear · Steganography" }
+        ],
+        "qa": [
+          { "q": "List the six phases of the NIST incident response lifecycle.", "a": "1) Preparation — establish IR capability. 2) Detection & Analysis — identify and scope the incident. 3) Containment — isolate affected systems. 4) Eradication — remove threat. 5) Recovery — restore and monitor. 6) Post-Incident Activity — lessons learned." },
+          { "q": "What is the difference between static and dynamic malware analysis?", "a": "Static analysis examines the malware binary without executing it: reading strings, PE headers, disassembling code with Ghidra. Dynamic analysis runs the malware in an isolated sandbox (Cuckoo) and observes what it actually does, revealing behaviour that obfuscation hides." },
+          { "q": "An attacker used Windows Event Log clearing to cover their tracks. What evidence might still remain?", "a": "1) VSS (Volume Shadow Copies) may contain the event logs before clearing. 2) The $UsnJrnl may record that wevtutil.exe modified the log files. 3) SIEM/SYSLOG — if logs were forwarded to a remote server, they are intact there." },
+          { "q": "What are indicators of compromise (IoCs) and give three examples.", "a": "IoCs are evidence that a system has been compromised. Examples: 1) Known malware file hash. 2) Outbound connections to a known C2 IP. 3) Suspicious registry run key pointing to a temp directory." },
+          { "q": "How might a forensic analyst recover encryption keys from a BitLocker-encrypted drive?", "a": "1) Live acquisition — acquire RAM and search for the FVEK using Volatility's bitlocker plugin if the system is running. 2) Hibernation file (hiberfil.sys) may contain a RAM snapshot with the key. 3) Microsoft recovery key — organisations often back up BitLocker keys to Active Directory." }
+        ]
+      }
+    ]
+  },
+
+  "networks": {
+    "name": "Computer Networks 1",
+    "accent": "#2dd4b6",
+    "accent2": "#22b5a0",
+    "accent3": "#67e8f9",
+    "topics": [
+      {
+        "short": "Introduction to Networks",
+        "subtitle": "1.1 Network Types · 1.2 Topologies · 1.3 OSI Model · 1.4 TCP/IP Stack",
+        "notes": [
+          { "title": "Network Types", "body": "<ul><li><strong>PAN</strong>: Bluetooth, ~10m, personal devices</li><li><strong>LAN</strong>: single building/campus, high speed (1–100 Gbps), privately owned</li><li><strong>MAN</strong>: city-wide, e.g., campus backbone, ISP metro rings</li><li><strong>WAN</strong>: spans countries/continents, lower speed, public infrastructure</li></ul>" },
+          { "title": "Network Topologies", "body": "<ul><li><strong>Bus</strong>: single cable, all nodes share medium, cheap</li><li><strong>Star</strong>: all nodes connect to central switch/hub, easy to manage</li><li><strong>Ring</strong>: nodes in a circle, token-passing</li><li><strong>Mesh</strong>: every node connected to every other, highly redundant, expensive</li><li><strong>Hybrid</strong>: combination (star-bus most common in modern LANs)</li></ul>" },
+          { "title": "OSI Model (7 Layers)", "body": "<ol style='padding-left:18px'><li><strong>Physical</strong>: bits on the wire, cables, voltages</li><li><strong>Data Link</strong>: frames, MAC addresses, error detection (CRC)</li><li><strong>Network</strong>: IP addresses, routing, logical addressing</li><li><strong>Transport</strong>: TCP/UDP, ports, end-to-end delivery</li><li><strong>Session</strong>: session management, dialogue control</li><li><strong>Presentation</strong>: encoding, encryption, compression</li><li><strong>Application</strong>: HTTP, FTP, SMTP, DNS</li></ol>" },
+          { "title": "TCP/IP Model (4 Layers)", "body": "Practical alternative to OSI: <strong>Network Access</strong> (OSI 1+2), <strong>Internet</strong> (OSI 3 — IP), <strong>Transport</strong> (OSI 4 — TCP/UDP), <strong>Application</strong> (OSI 5–7). Data encapsulation: Application data → Transport adds header (segment) → IP adds header (packet) → Data Link adds header+trailer (frame) → Physical transmits bits." }
+        ],
+        "summary": "Networks are classified by geographic scope (PAN→WAN). The OSI 7-layer and TCP/IP 4-layer models define protocols at each layer. Data is encapsulated as it moves down the stack: data → segment → packet → frame → bits.",
+        "sumCards": [
+          { "label": "Network Types", "content": "PAN (10m) → LAN (building) → MAN (city) → WAN (global)" },
+          { "label": "OSI Layers", "content": "7:App · 6:Pres · 5:Session · 4:Transport · 3:Network · 2:DataLink · 1:Physical" },
+          { "label": "TCP/IP Stack", "content": "Application → Transport → Internet → Network Access" },
+          { "label": "Encapsulation", "content": "Data → Segment → Packet → Frame → Bits" }
+        ],
+        "qa": [
+          { "q": "What are the 7 layers of the OSI model? Give a protocol example for layers 3, 4, and 7.", "a": "1-Physical, 2-Data Link, 3-Network (IP), 4-Transport (TCP/UDP), 5-Session, 6-Presentation, 7-Application (HTTP, DNS, SMTP)." },
+          { "q": "Compare TCP and UDP. When would you use each?", "a": "TCP: connection-oriented, reliable — use for web (HTTP), email (SMTP), file transfer (FTP). UDP: connectionless, low overhead — use for VoIP, DNS queries, video streaming, online gaming." },
+          { "q": "Explain data encapsulation as a packet moves from browser to network wire.", "a": "HTTP creates application data. TCP adds a header → segment. IP adds a header → packet. Ethernet adds MAC header + trailer → frame. NIC converts frame to signals → bits on the wire." },
+          { "q": "What is the difference between a hub, a switch, and a router?", "a": "Hub (Layer 1): broadcasts every frame to all ports. Switch (Layer 2): forwards frames only to the correct port using MAC address table. Router (Layer 3): connects different networks using IP addresses, separates broadcast domains." },
+          { "q": "Why does modern networking use the TCP/IP model rather than the OSI model in practice?", "a": "The TCP/IP model was developed alongside actual Internet protocols and reflects how they work. OSI was a theoretical framework — its session and presentation layers are rarely distinct in practice." }
+        ]
+      },
+      {
+        "short": "IP Addressing & Subnetting",
+        "subtitle": "2.1 IPv4 · 2.2 Subnetting (CIDR) · 2.3 IPv6 · 2.4 DHCP & DNS",
+        "notes": [
+          { "title": "IPv4 Addressing", "body": "32-bit address, written as 4 octets (e.g., 192.168.1.10). <strong>Private ranges</strong>: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 — not routable on the Internet. <strong>Loopback</strong>: 127.0.0.1. Total addresses: 2^32 ≈ 4.3 billion — exhausted in 2011." },
+          { "title": "Subnetting (CIDR)", "body": "CIDR notation: address/prefix-length (e.g., 192.168.1.0/24). /24 = 255.255.255.0 → 256 addresses, 254 usable. Formula: hosts = 2^(32-prefix) − 2. Subnetting divides a large network into smaller logical segments for efficiency and security." },
+          { "title": "IPv6", "body": "128-bit addresses (2^128 ≈ 3.4×10^38). Written as 8 groups of 4 hex digits. :: abbreviates consecutive zero groups. No broadcast — uses multicast. <strong>SLAAC</strong>: Stateless Address Autoconfiguration — no DHCP needed." },
+          { "title": "DHCP & DNS", "body": "<strong>DHCP</strong>: dynamically assigns IP, subnet mask, default gateway, DNS server. Process: DISCOVER → OFFER → REQUEST → ACK (DORA). <strong>DNS</strong>: resolves domain names to IPs. Record types: A (IPv4), AAAA (IPv6), MX (mail), CNAME (alias), NS (nameserver)." }
+        ],
+        "summary": "IPv4 uses 32-bit addresses (exhausted 2011); IPv6 uses 128-bit. CIDR subnetting divides address space efficiently. DHCP automates IP assignment (DORA); DNS resolves names to IPs through a hierarchical tree.",
+        "sumCards": [
+          { "label": "IPv4 Private Ranges", "content": "10.0.0.0/8 · 172.16.0.0/12 · 192.168.0.0/16" },
+          { "label": "CIDR Formula", "content": "Hosts = 2^(32−prefix) − 2\n/24 → 254 hosts · /25 → 126" },
+          { "label": "DHCP DORA", "content": "Discover → Offer → Request → Acknowledge" },
+          { "label": "DNS Records", "content": "A: IPv4 · AAAA: IPv6 · MX: mail · CNAME: alias · NS: nameserver" }
+        ],
+        "qa": [
+          { "q": "How many usable host addresses are in a /26 subnet?", "a": "/26 has 6 host bits. Total = 2^6 = 64. Usable = 64 − 2 = 62 (subtract network address and broadcast address)." },
+          { "q": "What is the purpose of private IP address ranges and how do they reach the Internet?", "a": "Private ranges allow unlimited reuse internally without purchasing public IPs. They reach the Internet through NAT (Network Address Translation) on the router, which replaces private source IPs with the public IP." },
+          { "q": "Explain the DNS resolution process when you type 'www.google.com' in a browser.", "a": "1) Browser checks local cache. 2) Queries local resolver. 3) Resolver queries root nameserver → .com TLD server → Google's authoritative NS. 4) Google's NS returns the A record. 5) Resolver caches and returns IP to browser." },
+          { "q": "What advantages does IPv6 have over IPv4?", "a": "1) Enormous address space: 2^128. 2) No broadcast — multicast reduces traffic. 3) IPSec built-in. 4) SLAAC — auto-configure without DHCP. 5) Simplified header — faster routing. 6) No NAT needed." },
+          { "q": "What is NAT and why is it necessary?", "a": "Network Address Translation translates private IP addresses to a public IP. It is necessary because IPv4 address space is exhausted — organizations use private ranges internally and NAT allows all devices to share one public IP for Internet access." }
+        ]
+      },
+      {
+        "short": "Routing & Switching",
+        "subtitle": "3.1 Ethernet & MAC · 3.2 VLANs · 3.3 Static vs Dynamic Routing · 3.4 OSPF & BGP",
+        "notes": [
+          { "title": "Ethernet & MAC Addresses", "body": "Ethernet (IEEE 802.3): dominant LAN technology. Frames have src/dest <strong>MAC addresses</strong> (48-bit, e.g., AA:BB:CC:DD:EE:FF). Switches learn MAC→port mappings in a CAM table. <strong>ARP</strong>: maps IP to MAC — 'Who has 192.168.1.1? Tell 192.168.1.50'." },
+          { "title": "VLANs (Virtual LANs)", "body": "Logically segment a switch into multiple broadcast domains. Benefits: security, reduces broadcast traffic, flexibility. <strong>Access port</strong>: untagged, connects end devices to one VLAN. <strong>Trunk port</strong>: carries tagged frames for multiple VLANs (802.1Q). Inter-VLAN routing requires a router or Layer 3 switch." },
+          { "title": "Static vs Dynamic Routing", "body": "<strong>Static routes</strong>: manually configured, predictable, no overhead, doesn't adapt to failures. <strong>Dynamic routing</strong>: routers exchange routing information automatically using protocols. Categories: IGP (within an AS) vs EGP (between ASes)." },
+          { "title": "OSPF & BGP", "body": "<strong>OSPF</strong> (Open Shortest Path First): link-state IGP. Each router knows full topology → runs Dijkstra's SPF algorithm. Metric: cost (= 100Mbps/bandwidth). <strong>BGP</strong> (Border Gateway Protocol): the Internet's routing protocol — path-vector EGP between Autonomous Systems, uses policy-based routing." }
+        ],
+        "summary": "Switches use MAC address tables to forward frames; ARP maps IPs to MACs. VLANs logically segment networks. OSPF computes shortest paths within an AS using Dijkstra; BGP routes between ASes using policy.",
+        "sumCards": [
+          { "label": "ARP Process", "content": "Broadcast: Who has IP x? → Reply: IP x is at MAC y" },
+          { "label": "VLAN Ports", "content": "Access port: 1 VLAN, untagged\nTrunk port: many VLANs, 802.1Q tagged" },
+          { "label": "OSPF vs BGP", "content": "OSPF: intra-AS, link-state, Dijkstra · BGP: inter-AS, path-vector, policy" },
+          { "label": "Routing Types", "content": "Static: manual, predictable · Dynamic: auto-updates, adaptive" }
+        ],
+        "qa": [
+          { "q": "A switch receives a frame with an unknown destination MAC. What does it do?", "a": "The switch floods the frame out all ports except the one it arrived on (unknown unicast flood). When the destination replies, the switch learns its MAC address and port, adding it to the CAM table." },
+          { "q": "What problem do VLANs solve and what is required for inter-VLAN communication?", "a": "VLANs solve the problem of a flat network where all devices share one broadcast domain. Inter-VLAN routing requires either a router (router-on-a-stick with 802.1Q trunk) or a Layer 3 switch with SVI." },
+          { "q": "How does OSPF determine the 'best' path to a destination?", "a": "OSPF uses cost as its metric, where cost = reference bandwidth / interface bandwidth. Each router maintains a complete link-state database and runs Dijkstra's SPF algorithm to compute the lowest-cost path to every network." },
+          { "q": "Why is BGP described as the 'protocol of the Internet'?", "a": "The Internet consists of thousands of Autonomous Systems (AS). BGP is the only EGP that routes between ASes. It carries the full global routing table (~900,000 prefixes) and makes routing decisions based on policy (business relationships)." },
+          { "q": "Explain ARP poisoning and what it enables an attacker to do.", "a": "ARP has no authentication — any device can send an ARP reply claiming to own any IP. In ARP poisoning, the attacker broadcasts fake ARP replies associating their MAC with the gateway's IP, enabling a man-in-the-middle attack." }
+        ]
+      },
+      {
+        "short": "Transport Layer: TCP & UDP",
+        "subtitle": "4.1 TCP Three-Way Handshake · 4.2 Flow & Congestion Control · 4.3 UDP · 4.4 Ports",
+        "notes": [
+          { "title": "TCP Three-Way Handshake", "body": "Connection establishment: <strong>SYN</strong> (client → server, ISN_c), <strong>SYN-ACK</strong> (server → client, ISN_s, ACK=ISN_c+1), <strong>ACK</strong> (client → server, ACK=ISN_s+1). Connection teardown: FIN → FIN-ACK → FIN → ACK (4-way)." },
+          { "title": "TCP Reliability Mechanisms", "body": "<ul><li><strong>Sequence numbers</strong>: order segments, detect gaps</li><li><strong>Acknowledgements (ACKs)</strong>: cumulative — ACK n means 'received all bytes up to n-1'</li><li><strong>Retransmission</strong>: if no ACK within RTO, retransmit</li><li><strong>Flow control</strong>: receiver advertises window size to prevent buffer overflow</li><li><strong>Congestion control</strong>: slow start, congestion avoidance, fast retransmit</li></ul>" },
+          { "title": "UDP (User Datagram Protocol)", "body": "Connectionless, no handshake, no ACKs, no ordering, no retransmission. Best-effort delivery. Used by: DNS (port 53), DHCP (67/68), VoIP, video streaming, QUIC (HTTP/3). Applications handle reliability themselves if needed." },
+          { "title": "Well-Known Ports", "body": "<ul><li>20/21: FTP · 22: SSH · 23: Telnet</li><li>25/587: SMTP · 110: POP3 · 143: IMAP</li><li>53: DNS · 67/68: DHCP</li><li>80: HTTP · 443: HTTPS · 3389: RDP · 3306: MySQL</li></ul>Ports 0–1023: well-known. 1024–49151: registered. 49152–65535: ephemeral (client)." }
+        ],
+        "summary": "TCP is reliable, ordered, connection-oriented — uses 3-way handshake, ACKs, retransmission, and flow control. UDP is lightweight and connectionless — used for latency-sensitive applications. Ports identify applications on a host.",
+        "sumCards": [
+          { "label": "3-Way Handshake", "content": "SYN → SYN-ACK → ACK (connection)\nFIN → FIN-ACK → FIN → ACK (teardown)" },
+          { "label": "TCP Reliability", "content": "Seq numbers · ACKs · Retransmission · Window (flow) · Slow start (congestion)" },
+          { "label": "TCP vs UDP", "content": "TCP: reliable, ordered, slow · UDP: unreliable, fast, no handshake" },
+          { "label": "Key Ports", "content": "22:SSH · 53:DNS · 80:HTTP · 443:HTTPS · 3389:RDP" }
+        ],
+        "qa": [
+          { "q": "Describe the TCP three-way handshake step by step.", "a": "1) Client sends SYN with random ISN_c to server. 2) Server responds with SYN-ACK: acknowledges client's ISN (ACK = ISN_c + 1) and includes its own ISN_s. 3) Client sends ACK (ACK = ISN_s + 1). Connection is established." },
+          { "q": "What is TCP slow start and why is it necessary?", "a": "Slow start is TCP's congestion control mechanism. The congestion window starts at 1 MSS and doubles every RTT until it reaches the slow-start threshold or a packet loss event. This prevents a new connection from immediately flooding the network." },
+          { "q": "Why does DNS use UDP instead of TCP?", "a": "DNS queries are small (typically <512 bytes) and need to be fast. UDP has no connection setup overhead, making it much faster for short request-response transactions. If a UDP DNS response exceeds 512 bytes, DNS falls back to TCP." },
+          { "q": "What is a SYN flood attack and how does SYN cookies mitigate it?", "a": "A SYN flood sends millions of SYN packets with spoofed source IPs, filling the server's connection table. SYN cookies: instead of allocating state, the server encodes session info into the ISN of the SYN-ACK. State is only allocated when a valid ACK returns." },
+          { "q": "A client connects to a web server. Identify the source and destination port numbers in both directions.", "a": "Client → Server: source port = ephemeral (e.g., 54321), dest port = 80 (HTTP) or 443 (HTTPS). Server → Client: source port = 80/443, dest port = 54321. The 4-tuple (src IP, src port, dst IP, dst port) uniquely identifies the TCP connection." }
+        ]
+      },
+      {
+        "short": "Network Security Fundamentals",
+        "subtitle": "5.1 Firewalls · 5.2 VPN · 5.3 Common Attacks · 5.4 Network Hardening",
+        "notes": [
+          { "title": "Firewalls", "body": "<ul><li><strong>Packet filter</strong>: checks IP/port headers (stateless, fast, limited)</li><li><strong>Stateful inspection</strong>: tracks connection state, only allows return traffic for established sessions</li><li><strong>NGFW</strong>: deep packet inspection, application awareness (Layer 7), IPS integration</li><li><strong>WAF</strong>: inspects HTTP — blocks SQLi, XSS, etc.</li></ul>" },
+          { "title": "VPN (Virtual Private Network)", "body": "Creates an encrypted tunnel over an untrusted network. <strong>IPSec</strong>: operates at Layer 3, Transport mode (encrypts payload only) or Tunnel mode (encrypts entire IP packet). <strong>SSL/TLS VPN</strong>: operates at Layer 4/7, uses browser/client (OpenVPN, WireGuard). Provides confidentiality, integrity, authentication." },
+          { "title": "Common Network Attacks", "body": "<ul><li><strong>DoS/DDoS</strong>: flood traffic to exhaust resources</li><li><strong>MITM</strong>: intercept traffic (ARP poisoning, rogue AP)</li><li><strong>Port scanning</strong>: Nmap to discover open ports/services</li><li><strong>Sniffing</strong>: capture unencrypted traffic (Wireshark on same network)</li><li><strong>DNS spoofing</strong>: return false DNS responses to redirect traffic</li></ul>" },
+          { "title": "Network Hardening", "body": "<ul><li>Disable unused ports and services</li><li>Use VLANs to segment sensitive systems</li><li>Implement 802.1X port authentication (NAC)</li><li>Enable DHCP snooping, Dynamic ARP Inspection (DAI)</li><li>Use encrypted protocols: SSH (not Telnet), HTTPS (not HTTP), SFTP (not FTP)</li></ul>" }
+        ],
+        "summary": "NGFWs provide stateful + application-layer filtering. VPNs encrypt traffic using IPSec (Layer 3) or TLS (Layer 4). DDoS, MITM, and ARP poisoning are common network attacks. Hardening involves segmentation, authentication, and protocol encryption.",
+        "sumCards": [
+          { "label": "Firewall Types", "content": "Packet filter · Stateful · NGFW (L7, DPI) · WAF (HTTP)" },
+          { "label": "VPN Protocols", "content": "IPSec: Transport / Tunnel modes\nTLS VPN: OpenVPN, WireGuard" },
+          { "label": "Attack Types", "content": "DDoS · MITM · Sniffing · Port scan · DNS spoof" },
+          { "label": "Hardening", "content": "VLANs · 802.1X · DHCP snooping · DAI · Encrypted protocols" }
+        ],
+        "qa": [
+          { "q": "What is the difference between a stateless and stateful firewall?", "a": "A stateless (packet filter) firewall inspects each packet independently based on header fields — no memory of previous packets. A stateful firewall tracks TCP connection state and only allows return traffic for established sessions." },
+          { "q": "Explain how IPSec Tunnel mode works and where it is typically deployed.", "a": "In Tunnel mode, IPSec encrypts the entire original IP packet (header + data) and adds a new outer IP header for routing. This hides both the payload and original source/destination IPs. Used for site-to-site VPNs between corporate offices." },
+          { "q": "What is a DDoS attack and what distinguishes it from DoS?", "a": "A DoS attack comes from a single source. A DDoS uses thousands of compromised machines (a botnet) to amplify the attack volume, making it much harder to block — filtering one IP is useless when the attack comes from 100,000 IPs simultaneously." },
+          { "q": "What does Dynamic ARP Inspection (DAI) do and what attack does it prevent?", "a": "DAI inspects all ARP packets on a switch and checks them against a DHCP snooping binding table. ARP replies that don't match the table are dropped. This prevents ARP poisoning attacks." },
+          { "q": "Why should Telnet be replaced with SSH for network device management?", "a": "Telnet transmits all data — including usernames, passwords, and configuration commands — in clear text. Anyone on the same network can capture Telnet sessions with Wireshark. SSH encrypts the entire session and supports key-based authentication." }
+        ]
+      }
+    ]
+  },
+
+  "cloud": {
+    "name": "Cloud Computing",
+    "accent": "#a78bfa",
+    "accent2": "#7c5af0",
+    "accent3": "#c4b5fd",
+    "topics": [
+      {
+        "short": "Introduction to Cloud Computing",
+        "subtitle": "1.1 Definition · 1.2 NIST Model · 1.3 Deployment Models · 1.4 Benefits & Risks",
+        "notes": [
+          { "title": "What is Cloud Computing?", "body": "NIST definition: a model for enabling ubiquitous, convenient, on-demand network access to a shared pool of configurable computing resources that can be rapidly provisioned and released with minimal management effort. Key concept: <strong>pay-as-you-go</strong> IT infrastructure delivered over the Internet." },
+          { "title": "Five Essential Characteristics (NIST)", "body": "<ol style='padding-left:18px'><li><strong>On-demand self-service</strong>: provision resources without human interaction</li><li><strong>Broad network access</strong>: accessible via standard mechanisms (laptop, phone)</li><li><strong>Resource pooling</strong>: multi-tenant, dynamically assigned</li><li><strong>Rapid elasticity</strong>: scale in/out quickly, appear unlimited</li><li><strong>Measured service</strong>: metered, pay only for what you use</li></ol>" },
+          { "title": "Deployment Models", "body": "<ul><li><strong>Public cloud</strong>: owned by provider (AWS, Azure, GCP), shared infrastructure, lowest cost</li><li><strong>Private cloud</strong>: dedicated to one organisation — higher control, higher cost</li><li><strong>Community cloud</strong>: shared by organisations with common concerns (e.g., healthcare, government)</li><li><strong>Hybrid cloud</strong>: mix of public + private — balance cost vs control</li></ul>" },
+          { "title": "Benefits & Risks", "body": "<strong>Benefits</strong>: reduced capital expenditure, global reach, scalability, resilience, faster innovation, pay-per-use.<br><strong>Risks</strong>: vendor lock-in, data sovereignty, multi-tenancy security, dependence on Internet connectivity, loss of direct control over infrastructure." }
+        ],
+        "summary": "Cloud computing provides on-demand, pay-per-use computing over the Internet. NIST defines 5 characteristics. Deployment models range from public (cheapest) to private (most control) to hybrid (balanced).",
+        "sumCards": [
+          { "label": "NIST 5 Characteristics", "content": "On-demand · Broad access · Pooled · Elastic · Measured" },
+          { "label": "Deployment Models", "content": "Public: shared, cheapest · Private: dedicated · Hybrid: mixed" },
+          { "label": "Top Benefits", "content": "No CapEx · Scalable · Global · Pay-per-use · Resilient" },
+          { "label": "Top Risks", "content": "Vendor lock-in · Data sovereignty · Multi-tenancy · Connectivity dependence" }
+        ],
+        "qa": [
+          { "q": "State and explain the five essential characteristics of cloud computing according to NIST.", "a": "1) On-demand self-service — provision without provider interaction. 2) Broad network access — accessible from any device. 3) Resource pooling — multi-tenant. 4) Rapid elasticity — scale quickly; appears unlimited. 5) Measured service — billed like a utility." },
+          { "q": "Compare public and private cloud deployment models.", "a": "Public cloud: infrastructure owned and shared by a third-party provider (e.g., AWS). Low cost, globally available, no hardware maintenance. Risk: less control. Private cloud: dedicated to one organisation. Higher control and security, but higher cost and requires in-house expertise." },
+          { "q": "A Zambian bank wants to use cloud computing but must keep customer data inside Zambia. Which model is most appropriate?", "a": "A private cloud deployed on-premises or in a Zambian data centre. It provides cloud benefits (elasticity, self-service) while ensuring data sovereignty — all data remains within Zambia." },
+          { "q": "What is vendor lock-in in cloud computing and how can it be mitigated?", "a": "Vendor lock-in occurs when dependence on a specific cloud provider's proprietary services makes migration prohibitively complex. Mitigation: use open standards, adopt a multi-cloud strategy, containerise applications (Docker/Kubernetes)." },
+          { "q": "Explain rapid elasticity and give a business scenario where it provides value.", "a": "Rapid elasticity means computing resources can quickly scale up or down. Scenario: an online retailer during Black Friday — traffic spikes 10x, auto-scaling provisions extra instances to handle the surge, then terminates them after. Pay only for extra capacity used." }
+        ]
+      },
+      {
+        "short": "Cloud Service Models",
+        "subtitle": "2.1 IaaS · 2.2 PaaS · 2.3 SaaS · 2.4 Shared Responsibility",
+        "notes": [
+          { "title": "IaaS – Infrastructure as a Service", "body": "Provider manages: physical hardware, network, virtualisation layer. Customer manages: OS, middleware, runtime, applications, data. Examples: <strong>AWS EC2</strong>, <strong>Azure Virtual Machines</strong>, <strong>Google Compute Engine</strong>. Best for: teams who need full OS control." },
+          { "title": "PaaS – Platform as a Service", "body": "Provider manages: infrastructure + OS + runtime. Customer manages: applications and data only. Examples: <strong>AWS Elastic Beanstalk</strong>, <strong>Google App Engine</strong>, <strong>Heroku</strong>. Best for: developers who want to deploy code without managing servers." },
+          { "title": "SaaS – Software as a Service", "body": "Provider manages everything. Customer only uses the application via browser. Examples: <strong>Gmail, Microsoft 365, Salesforce, Zoom</strong>. No installation, no maintenance. Limited customisation. Best for: end-user productivity applications." },
+          { "title": "Shared Responsibility Model", "body": "Cloud provider is responsible for security <strong>OF</strong> the cloud (physical, network, virtualisation). Customer is responsible for security <strong>IN</strong> the cloud. In IaaS: customer patches OS and secures apps. In PaaS: customer secures apps and data. In SaaS: customer manages accounts and access control." }
+        ],
+        "summary": "IaaS gives max control (you manage OS up). PaaS abstracts infrastructure (you manage app + data). SaaS is full turnkey (you manage accounts only). The shared responsibility model defines who secures what.",
+        "sumCards": [
+          { "label": "IaaS", "content": "You manage: OS → App → Data\nExamples: EC2, Azure VM, GCE" },
+          { "label": "PaaS", "content": "You manage: App + Data only\nExamples: Heroku, App Engine, Beanstalk" },
+          { "label": "SaaS", "content": "You manage: accounts/access only\nExamples: Gmail, Salesforce, Office 365" },
+          { "label": "Shared Responsibility", "content": "Provider: security OF cloud\nCustomer: security IN cloud" }
+        ],
+        "qa": [
+          { "q": "A startup wants to deploy a web app without managing servers. Which service model is best?", "a": "PaaS. The startup pushes their code to Heroku or Google App Engine. The provider handles OS, runtime, scaling, and patching. Developers only manage application code and database." },
+          { "q": "Explain the shared responsibility model for IaaS.", "a": "The cloud provider secures physical data centres, hardware, network, and hypervisor. The customer is responsible from the OS upwards: patching the OS, securing the application, encrypting data, configuring firewalls, managing identity and access." },
+          { "q": "List two examples each of IaaS, PaaS, and SaaS.", "a": "IaaS: AWS EC2, Google Cloud Storage. PaaS: Heroku, AWS RDS. SaaS: Microsoft 365, Salesforce." },
+          { "q": "What does 'serverless computing' mean and which service model does it relate to?", "a": "Serverless (e.g., AWS Lambda) is an extreme form of PaaS where you write small functions triggered by events — no servers to manage, no scaling to configure. Billed per function invocation and execution time, not for idle servers." },
+          { "q": "A company stores sensitive HR data in a SaaS HR platform. Who is responsible for encrypting this data?", "a": "The customer is responsible for: ensuring encryption-at-rest is enabled, managing access controls (who can view HR data), enabling MFA for all accounts, and reviewing the provider's compliance certifications (SOC 2, ISO 27001)." }
+        ]
+      },
+      {
+        "short": "Virtualisation & Containers",
+        "subtitle": "3.1 Hypervisors · 3.2 Virtual Machines · 3.3 Docker Containers · 3.4 Kubernetes",
+        "notes": [
+          { "title": "Virtualisation & Hypervisors", "body": "Virtualisation abstracts hardware to allow multiple VMs on one physical host. <strong>Type 1 (bare-metal)</strong>: runs directly on hardware (VMware ESXi, Microsoft Hyper-V, KVM). <strong>Type 2 (hosted)</strong>: runs on a host OS (VirtualBox, VMware Workstation). Type 1 is used in production cloud environments." },
+          { "title": "Virtual Machines (VMs)", "body": "Each VM has its own full OS, kernel, libraries, and applications — completely isolated. Snapshots enable rollback. <strong>Drawbacks</strong>: slow to start (minutes), large on disk (GBs), significant CPU/RAM overhead per VM." },
+          { "title": "Docker Containers", "body": "Containers share the host OS kernel — only the application and its libraries are packaged. <strong>Docker image</strong>: layered, immutable snapshot. <strong>Dockerfile</strong>: build instructions. Benefits: start in seconds, MBs in size, consistent environment from dev to production. Isolation via Linux namespaces and cgroups." },
+          { "title": "Kubernetes (K8s)", "body": "Container orchestration platform. Key concepts: <strong>Pod</strong> (one or more containers), <strong>Deployment</strong> (manages replicas), <strong>Service</strong> (stable network endpoint), <strong>Ingress</strong> (HTTP routing). Self-healing: restarts failed pods automatically." }
+        ],
+        "summary": "Type 1 hypervisors run VMs directly on hardware — full OS isolation, heavy. Containers share the kernel — lightweight, fast, portable. Docker packages apps as images; Kubernetes orchestrates containers at scale with self-healing and auto-scaling.",
+        "sumCards": [
+          { "label": "Hypervisor Types", "content": "Type 1: bare-metal (ESXi, KVM) — production\nType 2: hosted (VirtualBox) — desktop" },
+          { "label": "VM vs Container", "content": "VM: full OS, slow, GBs, strong isolation\nContainer: shared kernel, fast, MBs, app isolation" },
+          { "label": "Docker Concepts", "content": "Image: immutable snapshot · Container: running instance · Dockerfile: build script" },
+          { "label": "Kubernetes", "content": "Pod · Deployment · Service · Ingress · Self-healing" }
+        ],
+        "qa": [
+          { "q": "What is the main difference between a Type 1 and Type 2 hypervisor?", "a": "Type 1 runs directly on physical hardware without a host OS — used in production (VMware ESXi, KVM). Type 2 runs as an application on top of an existing OS (VirtualBox) — easier to set up but has more overhead, used for development." },
+          { "q": "How do containers differ from virtual machines in terms of isolation and resource usage?", "a": "VMs run a complete guest OS — fully isolated but use gigabytes of RAM and take minutes to start. Containers share the host OS kernel — only package the app and its libraries using Linux namespaces. MBs in size, start in seconds, but share the kernel (less isolation)." },
+          { "q": "What is a Dockerfile and what does it contain?", "a": "A Dockerfile is a text file with instructions to build a Docker image: FROM (base image), RUN (commands during build), COPY (copy files into image), ENV (environment variables), EXPOSE (document port), CMD/ENTRYPOINT (default run command)." },
+          { "q": "Explain what a Kubernetes Pod is and how it differs from a container.", "a": "A Pod is the smallest deployable unit in Kubernetes — it wraps one or more tightly coupled containers that share the same network namespace and storage volumes. All containers in a Pod share an IP address." },
+          { "q": "What is Kubernetes self-healing and why does it matter for production systems?", "a": "If a container or Pod crashes, Kubernetes automatically restarts it to match the desired state. If a node fails, Kubernetes reschedules affected Pods onto healthy nodes. Operations teams don't need to manually restart crashed processes." }
+        ]
+      },
+      {
+        "short": "Cloud Storage & Databases",
+        "subtitle": "4.1 Object Storage · 4.2 Block & File Storage · 4.3 Cloud Databases · 4.4 Data Consistency",
+        "notes": [
+          { "title": "Object Storage", "body": "Stores data as objects (file + metadata + unique ID). Flat namespace. <strong>AWS S3</strong>, <strong>Azure Blob Storage</strong>, <strong>GCS</strong>. Best for: unstructured data (images, videos, backups, logs). Accessed via HTTP API (GET/PUT). Versioning, lifecycle policies, cross-region replication." },
+          { "title": "Block & File Storage", "body": "<strong>Block storage</strong>: raw block devices attached to VMs (AWS EBS). OS and file system manage it. Best for: databases, boot volumes. Low latency. <strong>File storage</strong>: NFS/SMB shared file systems (AWS EFS, Azure Files). Multiple VMs can mount same share." },
+          { "title": "Cloud Databases", "body": "<ul><li><strong>Relational (RDS)</strong>: AWS RDS (MySQL, PostgreSQL, Aurora) — ACID transactions, SQL</li><li><strong>NoSQL Document</strong>: MongoDB Atlas, AWS DynamoDB — JSON documents, flexible schema, horizontal scaling</li><li><strong>In-memory</strong>: AWS ElastiCache (Redis) — microsecond latency, session caching</li><li><strong>Data Warehouse</strong>: AWS Redshift, BigQuery — columnar, petabyte-scale analytics</li></ul>" },
+          { "title": "CAP Theorem & Consistency", "body": "A distributed system can guarantee at most two of: <strong>Consistency</strong> (all nodes see same data), <strong>Availability</strong> (every request gets a response), <strong>Partition tolerance</strong> (works despite network splits). Choose: CP (consistent, may be unavailable) or AP (available, may be stale)." }
+        ],
+        "summary": "Object storage (S3) handles unstructured data at scale. Block storage (EBS) is for databases and VMs. Cloud databases range from managed SQL (RDS) to NoSQL (DynamoDB) to analytics (Redshift). CAP theorem forces trade-offs between consistency and availability.",
+        "sumCards": [
+          { "label": "Storage Types", "content": "Object (S3): files+metadata · Block (EBS): raw disk · File (EFS): shared NFS" },
+          { "label": "Cloud DB Types", "content": "Relational (RDS) · NoSQL (DynamoDB) · Cache (Redis) · Warehouse (Redshift)" },
+          { "label": "CAP Theorem", "content": "Pick 2 of: Consistency / Availability / Partition tolerance" },
+          { "label": "S3 Key Features", "content": "Flat namespace · HTTP API · Versioning · Lifecycle · Cross-region replication" }
+        ],
+        "qa": [
+          { "q": "What is the difference between object storage and block storage? When would you use each?", "a": "Object storage (S3) stores data as immutable objects accessed via HTTP API — ideal for images, videos, backups. Block storage (EBS) presents raw blocks to an OS — essential for databases, boot volumes, and applications requiring low-latency random access." },
+          { "q": "Explain the CAP theorem with a practical cloud example.", "a": "CAP: you can only guarantee 2 of Consistency, Availability, Partition tolerance. CP example: a banking database — during partition, it refuses to respond rather than return stale data. AP example: a shopping cart — stays available but may return slightly stale data." },
+          { "q": "What is the difference between AWS RDS and DynamoDB?", "a": "RDS is a managed relational database — SQL, enforces schemas, ACID transactions, vertical scaling. DynamoDB is NoSQL key-value/document — schema-less, horizontal auto-scaling, millisecond latency. Best for high-throughput apps with simple access patterns." },
+          { "q": "What is S3 versioning and why would you enable it?", "a": "S3 versioning preserves every version of every object. Use cases: accidental deletion recovery, ransomware protection (attacker can't permanently destroy data), audit trail. Increases storage costs but essential for compliance." },
+          { "q": "When would you choose a data warehouse (Redshift) over a transactional database (RDS)?", "a": "Use Redshift for analytical workloads: large-scale aggregations, historical reporting, BI queries scanning billions of rows. Use RDS for OLTP: frequent inserts/updates/deletes with ACID guarantees. They solve fundamentally different problems." }
+        ]
+      },
+      {
+        "short": "Cloud Security & Compliance",
+        "subtitle": "5.1 Identity & Access Management · 5.2 Data Protection · 5.3 Compliance · 5.4 Best Practices",
+        "notes": [
+          { "title": "Identity & Access Management (IAM)", "body": "<strong>Principle of Least Privilege</strong>: grant only permissions needed for the task. IAM components: <strong>Users</strong> (individual identities), <strong>Groups</strong> (collection of users), <strong>Roles</strong> (temporary credentials for services), <strong>Policies</strong> (JSON documents defining allow/deny for actions). Enable <strong>MFA</strong> for all privileged accounts. Avoid using root account." },
+          { "title": "Data Protection in Cloud", "body": "<ul><li><strong>Encryption at rest</strong>: AES-256 for stored data (AWS KMS, Azure Key Vault manage keys)</li><li><strong>Encryption in transit</strong>: TLS 1.2+ for all data movement</li><li><strong>Key management</strong>: customer-managed keys (CMK) vs provider-managed — CMK gives more control</li><li><strong>Data masking/tokenisation</strong>: replace sensitive data with tokens in non-production environments</li></ul>" },
+          { "title": "Compliance Frameworks", "body": "<ul><li><strong>ISO 27001</strong>: information security management system standard</li><li><strong>SOC 2 Type II</strong>: audited security controls over time</li><li><strong>GDPR</strong>: EU data protection regulation — data residency, right to erasure</li><li><strong>PCI-DSS</strong>: payment card industry standard</li><li><strong>HIPAA</strong>: US healthcare data protection</li></ul>" },
+          { "title": "Cloud Security Best Practices", "body": "<ul><li>Enable CloudTrail/Activity Logs — log all API calls</li><li>Use Security Groups and Network ACLs to restrict access</li><li>Never embed credentials in code — use IAM roles</li><li>Enable GuardDuty/Defender for threat detection</li><li>Use private subnets for databases — never expose directly to Internet</li></ul>" }
+        ],
+        "summary": "IAM least privilege and MFA are foundational cloud security controls. Encrypt all data at rest (KMS) and in transit (TLS). Compliance frameworks (ISO 27001, GDPR, PCI-DSS) govern cloud data handling. Log all API activity and restrict network access via security groups.",
+        "sumCards": [
+          { "label": "IAM Principles", "content": "Least privilege · MFA on privileged accounts · No root for daily use · Roles over users" },
+          { "label": "Encryption", "content": "At rest: AES-256 + KMS · In transit: TLS 1.2+ · CMK for compliance" },
+          { "label": "Compliance", "content": "ISO 27001 · SOC 2 · GDPR · PCI-DSS · HIPAA" },
+          { "label": "Security Controls", "content": "CloudTrail · Security Groups · GuardDuty · Private subnets · Access reviews" }
+        ],
+        "qa": [
+          { "q": "What is the principle of least privilege in cloud IAM?", "a": "Least privilege means granting a user, application, or service only the minimum permissions required. Example: a Lambda function that only reads from S3 should have an IAM role with s3:GetObject on that specific bucket only, not s3:* on all buckets." },
+          { "q": "What is the difference between customer-managed keys (CMK) and provider-managed keys in AWS KMS?", "a": "Provider-managed keys: AWS creates, rotates, and manages the key — simpler but less control. CMK: the customer creates the key, controls the key policy, can disable or schedule deletion, has full audit logs. Required for most compliance frameworks." },
+          { "q": "A developer accidentally commits AWS credentials to a public GitHub repository. What immediate steps should be taken?", "a": "1) Immediately deactivate the exposed access key in IAM console. 2) Review CloudTrail logs for any API calls made with those credentials. 3) Check for suspicious activity. 4) Generate new credentials. 5) Use IAM roles or AWS Secrets Manager instead of hardcoded keys." },
+          { "q": "What is GDPR and what does it require of cloud deployments handling EU citizen data?", "a": "GDPR (General Data Protection Regulation) governs personal data in the EU. Requirements: 1) Data residency — may need to stay within the EU. 2) Right to erasure — ability to delete all data for a specific individual. 3) Breach notification within 72 hours. 4) Data Processing Agreements with cloud providers." },
+          { "q": "Why should databases never be placed in public subnets?", "a": "Public subnets have routes to the Internet Gateway — any resource with a public IP is directly reachable from the Internet. Databases should be in private subnets accessible only from application servers in the same VPC. This is defence-in-depth." }
+        ]
+      }
+    ]
+  },
+
+  "oop": {
+    "name": "OOP with Java",
+    "accent": "#f59e0b",
+    "accent2": "#d97706",
+    "accent3": "#fcd34d",
+    "topics": [
+      {
+        "short": "Introduction to Java & OOP",
+        "subtitle": "1.1 OOP Fundamentals · 1.2 Objects & Classes · 1.3 Encapsulation · 1.4 Java Features",
+        "notes": [
+          { "title": "Fundamentals of Object Oriented Programming", "body": "OOP organises software around <strong>objects</strong> — entities that combine data (fields) and behaviour (methods). The four pillars are: <strong>Encapsulation</strong>, <strong>Inheritance</strong>, <strong>Polymorphism</strong>, and <strong>Abstraction</strong>. OOP promotes code reuse, modularity, and maintainability over procedural programming." },
+          { "title": "Objects and Classes", "body": "A <strong>class</strong> is a blueprint/template defining attributes and methods. An <strong>object</strong> is an instance of a class created at runtime. Example:<br><pre><code>class Car {\n  String brand;\n  int speed;\n  void drive() { ... }\n}\nCar myCar = new Car(); // object</code></pre>" },
+          { "title": "Data Abstraction and Encapsulation", "body": "<strong>Abstraction</strong>: hiding complex implementation details, exposing only what is necessary (via abstract classes or interfaces). <strong>Encapsulation</strong>: bundling data and methods together and restricting direct access to internal state using access modifiers (private, protected, public). Data is accessed via getter/setter methods — also called <em>data hiding</em>." },
+          { "title": "Java Platform Features", "body": "<ul><li><strong>Compiled and Interpreted</strong>: Java source (.java) compiles to bytecode (.class), then interpreted by the JVM</li><li><strong>Platform Independent</strong>: 'Write Once, Run Anywhere' — JVM abstracts the OS</li><li><strong>Object Oriented</strong>: everything is an object (except primitives)</li><li><strong>Multithreaded</strong>: built-in support for concurrent programming</li><li><strong>Distributed</strong>: built-in networking libraries (java.net)</li><li><strong>High Performance</strong>: JIT compiler optimises bytecode at runtime</li></ul>" }
+        ],
+        "summary": "Java is a compiled, interpreted, platform-independent, object-oriented language. Classes are blueprints; objects are instances. Encapsulation bundles data and methods, hiding internal state. The four OOP pillars are Encapsulation, Inheritance, Polymorphism, and Abstraction.",
+        "sumCards": [
+          { "label": "4 OOP Pillars", "content": "Encapsulation · Inheritance · Polymorphism · Abstraction" },
+          { "label": "Class vs Object", "content": "Class: blueprint/template\nObject: runtime instance of a class" },
+          { "label": "Java Platform", "content": "Compiled → Bytecode → JVM → OS\n'Write Once, Run Anywhere'" },
+          { "label": "Encapsulation", "content": "Private fields + public getters/setters\nHides internal state from outside" }
+        ],
+        "qa": [
+          { "q": "What are the four pillars of Object Oriented Programming? Define each briefly.", "a": "1) Encapsulation — bundling data and methods, hiding internal state. 2) Inheritance — a subclass acquires properties of a superclass. 3) Polymorphism — one interface, multiple implementations. 4) Abstraction — hiding complex details, exposing only necessary interfaces." },
+          { "q": "Explain the difference between a class and an object in Java with an example.", "a": "A class is a blueprint that defines attributes and methods (e.g., class Dog { String name; void bark() {} }). An object is a specific instance created with 'new' (e.g., Dog d = new Dog(); d.name = \"Rex\"). Many objects can be created from one class." },
+          { "q": "What does 'platform independent' mean for Java and how is it achieved?", "a": "Platform independence means the same Java program runs on any OS without modification. Java achieves this by compiling source code to bytecode (.class files) rather than native machine code. The JVM (Java Virtual Machine), installed on each platform, interprets the bytecode — abstracting away OS differences." },
+          { "q": "What is encapsulation and why is it important?", "a": "Encapsulation bundles an object's data (fields) and behaviour (methods) together, and restricts direct access to the data using access modifiers (private). Data is accessed only via public getter/setter methods. This protects data integrity, makes code easier to maintain, and allows internal implementation changes without affecting external code." },
+          { "q": "How does Java differ from a purely interpreted language like Python?", "a": "Java is first compiled to platform-independent bytecode by the Java compiler (javac), then the JVM interprets or JIT-compiles the bytecode at runtime. This two-step process gives Java better performance than purely interpreted languages while maintaining platform independence. Python typically interprets source code directly, making it slower but simpler to run." }
+        ]
+      },
+      {
+        "short": "Variables, Data Types & Operators",
+        "subtitle": "2.1 Data Types · 2.2 Variables & Scope · 2.3 Type Casting · 2.4 Operators",
+        "notes": [
+          { "title": "Variables and Data Types", "body": "Java is <strong>statically typed</strong> — every variable must have a declared type. <strong>Primitive types</strong>: <code>byte</code> (8-bit), <code>short</code> (16-bit), <code>int</code> (32-bit), <code>long</code> (64-bit), <code>float</code> (32-bit), <code>double</code> (64-bit), <code>char</code> (16-bit Unicode), <code>boolean</code> (true/false). <strong>Reference types</strong>: String, arrays, objects. <strong>Constants</strong>: declared with <code>final</code> keyword — value cannot be changed after assignment." },
+          { "title": "Scope of Variables", "body": "<ul><li><strong>Local variables</strong>: declared inside a method — only accessible within that method, not initialised by default</li><li><strong>Instance variables (fields)</strong>: declared in a class but outside methods — each object has its own copy, default-initialised (int→0, boolean→false, object→null)</li><li><strong>Class variables (static)</strong>: declared with <code>static</code> — shared across all instances, one copy per class</li></ul>" },
+          { "title": "Type Casting", "body": "<strong>Widening (implicit)</strong>: smaller type automatically converts to larger type — no data loss. E.g., <code>int x = 5; double d = x;</code> (int → double).<br><strong>Narrowing (explicit)</strong>: larger type converted to smaller — may lose data, requires explicit cast. E.g., <code>double d = 9.99; int x = (int) d;</code> → x = 9 (decimal truncated).<br><strong>Standard default values</strong>: int/long = 0, float/double = 0.0, char = '\\u0000', boolean = false, object references = null." },
+          { "title": "Operators and Expressions", "body": "<ul><li><strong>Arithmetic</strong>: +, -, *, /, % (modulus)</li><li><strong>Relational</strong>: ==, !=, >, <, >=, <=</li><li><strong>Logical</strong>: &amp;&amp; (AND), || (OR), ! (NOT)</li><li><strong>Assignment</strong>: =, +=, -=, *=, /=</li><li><strong>Increment/Decrement</strong>: ++ (prefix/postfix), -- (prefix/postfix)</li><li><strong>Conditional (Ternary)</strong>: condition ? valueIfTrue : valueIfFalse</li><li><strong>Bitwise</strong>: &amp; (AND), | (OR), ^ (XOR), ~ (NOT), << (left shift), >> (right shift)</li><li><strong>Special</strong>: instanceof (type check), . (member access), [] (array index)</li></ul>" }
+        ],
+        "summary": "Java is statically typed with 8 primitive types and reference types. Variables have local, instance, or class (static) scope. Widening cast is automatic; narrowing requires explicit cast. Java supports arithmetic, relational, logical, bitwise, and conditional operators.",
+        "sumCards": [
+          { "label": "Primitive Types", "content": "byte/short/int/long · float/double · char · boolean" },
+          { "label": "Variable Scope", "content": "Local: inside method\nInstance: per object\nStatic: per class" },
+          { "label": "Type Casting", "content": "Widening: int → double (automatic)\nNarrowing: double → int (explicit cast)" },
+          { "label": "Key Operators", "content": "Arithmetic: + - * / %\nLogical: && || !\nTernary: cond ? a : b" }
+        ],
+        "qa": [
+          { "q": "What is the difference between int and Integer in Java?", "a": "'int' is a primitive type — stored directly on the stack, no methods, no null. 'Integer' is a wrapper class — an object wrapping an int, can be null, has useful methods (Integer.parseInt(), Integer.MAX_VALUE). Java's autoboxing automatically converts between int and Integer when needed." },
+          { "q": "What is the difference between prefix (++i) and postfix (i++) increment?", "a": "Prefix (++i): increments i first, then returns the new value. Postfix (i++): returns the current value of i first, then increments. Example: if i=5, then j = ++i gives i=6, j=6; but j = i++ gives i=6, j=5." },
+          { "q": "Explain widening and narrowing type casting with examples.", "a": "Widening: int x = 5; double d = x; — automatic, no data loss (int fits inside double). Narrowing: double d = 9.99; int x = (int) d; — explicit cast required, x = 9 (decimal part is truncated, not rounded). Narrowing can cause data loss." },
+          { "q": "What is a symbolic constant in Java and how is it declared?", "a": "A symbolic constant is a named value that cannot be changed after initialisation. In Java, it is declared using 'final': final int MAX_SIZE = 100; By convention, constants are named in ALL_CAPS. Using 'static final' makes it a class-level constant shared by all instances." },
+          { "q": "What does the modulus operator (%) do? Give an example.", "a": "The modulus operator returns the remainder of integer division. Example: 17 % 5 = 2 (17 divided by 5 is 3 remainder 2). Common uses: checking if a number is even (n % 2 == 0), cycling through a range (index % arrayLength), extracting digits from a number." }
+        ]
+      },
+      {
+        "short": "Control Flow: Decisions & Loops",
+        "subtitle": "3.1 if/else Statements · 3.2 switch · 3.3 while/do-while · 3.4 for Loops",
+        "notes": [
+          { "title": "Decision Making with if Statements", "body": "<strong>Simple if</strong>: executes a block only if condition is true.<br><strong>if-else</strong>: two alternatives — if true, execute block A; otherwise block B.<br><strong>else-if ladder</strong>: multiple conditions checked in sequence — only the first true branch executes.<br><pre><code>if (score >= 90) grade = 'A';\nelse if (score >= 80) grade = 'B';\nelse if (score >= 70) grade = 'C';\nelse grade = 'F';</code></pre>" },
+          { "title": "The switch Statement", "body": "Evaluates an expression and executes the matching <code>case</code>. Each case ends with <code>break</code> to prevent fall-through. <code>default</code> handles unmatched values. Works with int, char, String, and enum.<br><pre><code>switch (day) {\n  case 1: System.out.println(\"Mon\"); break;\n  case 2: System.out.println(\"Tue\"); break;\n  default: System.out.println(\"Other\");\n}</code></pre>" },
+          { "title": "Looping Statements", "body": "<strong>while</strong>: checks condition before each iteration — loop body may never execute.<br><strong>do-while</strong>: executes body first, then checks condition — body always executes at least once.<br><strong>for</strong>: compact syntax — initialisation, condition, update in one line. Best when iteration count is known:<br><pre><code>for (int i = 0; i < 10; i++) {\n  System.out.println(i);\n}</code></pre>" },
+          { "title": "Jumps in Loops & Labeled Loops", "body": "<strong>break</strong>: exits the innermost loop or switch immediately.<br><strong>continue</strong>: skips the rest of the current iteration, jumps to the next.<br><strong>Labeled loops</strong>: a label before a loop allows <code>break label</code> or <code>continue label</code> to control outer loops from inside nested loops:<br><pre><code>outer:\nfor (int i = 0; i < 5; i++) {\n  for (int j = 0; j < 5; j++) {\n    if (j == 3) break outer; // exits both loops\n  }\n}</code></pre>" }
+        ],
+        "summary": "Java control flow includes if/else-if/else for conditions, switch for multi-branch matching, and while/do-while/for loops. break exits a loop; continue skips an iteration. Labeled loops allow breaking from nested loops.",
+        "sumCards": [
+          { "label": "Decision Statements", "content": "if · if-else · else-if ladder · switch (with break)" },
+          { "label": "Loop Types", "content": "while: pre-check · do-while: post-check · for: compact/counted" },
+          { "label": "Loop Control", "content": "break: exit loop · continue: skip iteration · labeled: control outer loop" },
+          { "label": "switch Syntax", "content": "switch(expr) { case x: ...; break; default: ...; }" }
+        ],
+        "qa": [
+          { "q": "What is the difference between a while loop and a do-while loop?", "a": "A while loop checks the condition before the loop body executes — if the condition is false initially, the body never executes. A do-while loop executes the body first, then checks the condition — the body always executes at least once. Use do-while when the loop must run at least once (e.g., menu display)." },
+          { "q": "What happens if you forget the 'break' statement in a switch case?", "a": "Without 'break', execution 'falls through' to the next case and continues executing all subsequent cases regardless of their condition. This is usually a bug but can be intentional (e.g., multiple cases sharing the same code). Always include 'break' unless fall-through is deliberate." },
+          { "q": "Write a for loop to calculate the sum of numbers from 1 to 100.", "a": "int sum = 0; for (int i = 1; i <= 100; i++) { sum += i; } System.out.println(sum); // Output: 5050. The loop initialises i=1, runs while i<=100, and increments i by 1 each iteration." },
+          { "q": "When would you use a labeled break statement?", "a": "A labeled break is needed when you want to exit from a nested loop structure from within the inner loop. Without a label, 'break' only exits the innermost loop. With a label, you can jump out of any enclosing loop. Example: searching a 2D array and breaking out of both loops once a value is found." },
+          { "q": "What is the else-if ladder and how does it differ from multiple independent if statements?", "a": "An else-if ladder tests conditions in sequence and executes only the first matching branch — once a true condition is found, the rest are skipped. Multiple independent if statements all get evaluated regardless. Use else-if when conditions are mutually exclusive; use separate ifs when multiple conditions can be true simultaneously." }
+        ]
+      },
+      {
+        "short": "Classes, Objects & Methods",
+        "subtitle": "4.1 Defining Classes · 4.2 Constructors · 4.3 Method Overloading · 4.4 Static Members",
+        "notes": [
+          { "title": "Defining a Class and Creating Objects", "body": "A class defines a new type. Fields store state; methods define behaviour. Objects are created with <code>new</code>:<br><pre><code>class Student {\n  String name;    // instance field\n  int age;\n\n  void display() {\n    System.out.println(name + \" \" + age);\n  }\n}\nStudent s = new Student();\ns.name = \"Alice\";\ns.display();</code></pre>" },
+          { "title": "Constructors", "body": "A <strong>constructor</strong> is a special method called when an object is created with <code>new</code>. It has the same name as the class and no return type. Used to initialise fields. Java provides a default no-arg constructor if none is defined.<br><pre><code>class Student {\n  String name;\n  int age;\n\n  Student(String n, int a) { // parameterised constructor\n    name = n;\n    age = a;\n  }\n}\nStudent s = new Student(\"Alice\", 20);</code></pre>" },
+          { "title": "Method Overloading", "body": "<strong>Method overloading</strong> allows multiple methods with the same name but different parameter lists (different number or types of parameters). The compiler selects the correct method at compile time based on arguments — this is <em>compile-time polymorphism</em> (static binding).<br><pre><code>class Calculator {\n  int add(int a, int b) { return a + b; }\n  double add(double a, double b) { return a + b; } // overloaded\n  int add(int a, int b, int c) { return a + b + c; } // overloaded\n}</code></pre>" },
+          { "title": "Static Members", "body": "Members declared with <code>static</code> belong to the <strong>class</strong>, not to individual objects. Accessed via class name (e.g., <code>ClassName.staticField</code>). <strong>Static fields</strong> are shared across all instances (e.g., a counter). <strong>Static methods</strong> cannot access instance fields or use <code>this</code>. <code>main()</code> is always static — the JVM calls it without creating an object." }
+        ],
+        "summary": "Classes are blueprints with fields and methods. Constructors initialise new objects. Method overloading allows same method name with different parameters (compile-time polymorphism). Static members belong to the class and are shared across all instances.",
+        "sumCards": [
+          { "label": "Class Structure", "content": "Fields (state) + Methods (behaviour) + Constructors (initialise)" },
+          { "label": "Constructor Rules", "content": "Same name as class · No return type · Called with 'new'" },
+          { "label": "Method Overloading", "content": "Same name, different parameters\nCompile-time (static) polymorphism" },
+          { "label": "Static vs Instance", "content": "Static: belongs to class, shared\nInstance: belongs to each object" }
+        ],
+        "qa": [
+          { "q": "What is a constructor and how does it differ from a regular method?", "a": "A constructor is a special method invoked automatically when an object is created with 'new'. Differences: 1) Same name as the class. 2) No return type (not even void). 3) Cannot be called explicitly like a regular method. 4) Used only to initialise the new object's state. Regular methods can be called multiple times at any point." },
+          { "q": "What is method overloading and why is it useful?", "a": "Method overloading allows defining multiple methods with the same name but different parameter lists (different types, number, or order). Useful because: it allows related operations to share a meaningful name (e.g., add(int, int) and add(double, double)), improving code readability without needing different names like addInts() and addDoubles()." },
+          { "q": "What is the difference between a static method and an instance method?", "a": "An instance method is called on an object (student.display()) and has access to all instance fields and 'this'. A static method belongs to the class (Math.sqrt()), is called via class name, cannot access instance fields or use 'this', and can only directly access other static members." },
+          { "q": "What happens if you don't define a constructor in a Java class?", "a": "Java automatically provides a default no-argument constructor that initialises all fields to their default values (int→0, boolean→false, object→null). However, if you define any constructor with parameters, Java no longer provides the default constructor — you must explicitly define a no-arg constructor if you need one." },
+          { "q": "Explain the 'this' keyword in Java.", "a": "'this' refers to the current object instance. Common uses: 1) Disambiguate between instance fields and constructor/method parameters with the same name: this.name = name; 2) Call another constructor from within the same class: this(name, 0); (constructor chaining). 3) Pass the current object as an argument to another method." }
+        ]
+      },
+      {
+        "short": "Inheritance & Polymorphism",
+        "subtitle": "5.1 Extending Classes · 5.2 Multi-level & Hierarchical · 5.3 Method Overriding · 5.4 Abstract & Final",
+        "notes": [
+          { "title": "Inheritance: Extending a Class", "body": "A <strong>subclass</strong> inherits fields and methods from a <strong>superclass</strong> using the <code>extends</code> keyword. The subclass can add new members and override inherited methods. Java does not support multiple class inheritance (a class can only extend one class) but supports multilevel and hierarchical inheritance.<br><pre><code>class Animal {\n  String name;\n  void eat() { System.out.println(\"eating\"); }\n}\nclass Dog extends Animal {\n  void bark() { System.out.println(\"woof\"); }\n}\nDog d = new Dog();\nd.eat();  // inherited\nd.bark(); // own method</code></pre>" },
+          { "title": "Constructors in Inheritance", "body": "When a subclass object is created, the superclass constructor is called first. If the superclass has a parameterised constructor, the subclass must call it explicitly using <code>super(args)</code> as the first statement in the subclass constructor. <code>super</code> refers to the immediate superclass." },
+          { "title": "Method Overriding & Polymorphism", "body": "<strong>Method overriding</strong>: subclass provides its own implementation of a method already defined in the superclass — same method name, same parameter list, same return type. This enables <em>runtime polymorphism</em> (dynamic dispatch):<br><pre><code>class Shape {\n  void draw() { System.out.println(\"Drawing shape\"); }\n}\nclass Circle extends Shape {\n  @Override\n  void draw() { System.out.println(\"Drawing circle\"); }\n}\nShape s = new Circle();\ns.draw(); // prints \"Drawing circle\" — dynamic binding</code></pre>" },
+          { "title": "Abstract Classes, Final & Dynamic Binding", "body": "<strong>Abstract method</strong>: declared without a body — must be overridden by subclasses. <strong>Abstract class</strong>: cannot be instantiated; may have abstract and concrete methods. <strong>final variable</strong>: value cannot be changed (constant). <strong>final method</strong>: cannot be overridden. <strong>final class</strong>: cannot be subclassed (e.g., String is a final class). <strong>Dynamic binding</strong>: the JVM determines which overridden method to call at runtime based on the object's actual type." }
+        ],
+        "summary": "Inheritance allows subclasses to reuse and extend superclass functionality. Method overriding enables runtime polymorphism — the correct method is selected at runtime based on actual object type (dynamic binding). Abstract classes define partial implementations; final prevents modification.",
+        "sumCards": [
+          { "label": "Inheritance Types", "content": "Multilevel: A → B → C\nHierarchical: A → B and A → C" },
+          { "label": "Overriding Rules", "content": "Same name · Same params · Same return type\n@Override annotation recommended" },
+          { "label": "Abstract Class", "content": "Cannot be instantiated\nMay have abstract + concrete methods\nSubclass must implement abstract methods" },
+          { "label": "final Keyword", "content": "final variable: constant\nfinal method: cannot override\nfinal class: cannot extend" }
+        ],
+        "qa": [
+          { "q": "What is the difference between method overloading and method overriding?", "a": "Overloading: same method name with different parameters, within the same class. Resolved at compile time (static polymorphism). Overriding: subclass provides a new implementation of a superclass method with the exact same signature. Resolved at runtime (dynamic polymorphism). Overloading is about multiple methods in one class; overriding is about redefining in a subclass." },
+          { "q": "What is dynamic binding and how does it work in Java?", "a": "Dynamic binding (late binding) means the JVM decides which version of an overridden method to call at runtime, based on the actual type of the object — not the declared reference type. Example: Shape s = new Circle(); s.draw(); — the reference type is Shape, but the actual object is Circle, so Circle's draw() is called. This is the mechanism behind runtime polymorphism." },
+          { "q": "What is an abstract class and how does it differ from a concrete class?", "a": "An abstract class is declared with the 'abstract' keyword and cannot be instantiated directly — it must be subclassed. It can contain abstract methods (no body — subclasses must implement them) and concrete methods. A concrete class implements all methods and can be instantiated. Abstract classes are used to define a common template for subclasses." },
+          { "q": "Explain multilevel and hierarchical inheritance with examples.", "a": "Multilevel inheritance: a chain of inheritance — class C extends B, which extends A. Example: Animal → Mammal → Dog. Each level adds or specialises. Hierarchical inheritance: multiple subclasses extend the same superclass. Example: Animal → Dog, Animal → Cat, Animal → Bird. Multiple classes share the same parent." },
+          { "q": "Why would you make a class 'final' in Java?", "a": "Making a class final prevents it from being subclassed, ensuring its implementation cannot be altered by inheritance. Reasons: 1) Security — prevent subclasses from overriding security-critical methods. 2) Immutability — ensure the class's contract (e.g., String, Integer, wrapper classes). 3) Performance — JVM can apply optimisations when it knows there are no subclasses." }
+        ]
+      },
+      {
+        "short": "Visibility Control",
+        "subtitle": "6.1 Public · 6.2 Protected · 6.3 Private · 6.4 Default (Package) Access",
+        "notes": [
+          { "title": "Access Modifiers Overview", "body": "Java uses access modifiers to control the visibility of classes, fields, and methods. Four levels exist:<br><br><strong>public</strong>: accessible from anywhere — any class in any package.<br><strong>protected</strong>: accessible within the same package AND by subclasses (even in different packages).<br><strong>default</strong> (no modifier): accessible only within the same package — called package-private access.<br><strong>private</strong>: accessible only within the same class — strongest restriction." },
+          { "title": "Encapsulation with Private Fields", "body": "Best practice: declare all fields <code>private</code> and provide public getters/setters. This enforces encapsulation — internal state is hidden and only controlled access is allowed:<br><pre><code>class BankAccount {\n  private double balance;\n\n  public double getBalance() {\n    return balance;\n  }\n  public void deposit(double amount) {\n    if (amount > 0) balance += amount;\n  }\n}</code></pre>" },
+          { "title": "Protected Access", "body": "<code>protected</code> members are accessible within the same package and by subclasses in other packages. This is the appropriate level for methods or fields that subclasses need to access but that should not be public API. In inheritance hierarchies, protected allows a parent class to share implementation details with its children while still hiding them from unrelated classes." },
+          { "title": "Visibility Summary Table", "body": "<table style='border-collapse:collapse;font-family:DM Mono,monospace;font-size:12px;width:100%'><tr style='background:var(--surface2)'><th style='padding:5px 8px;border:1px solid var(--border2);text-align:left'>Modifier</th><th style='padding:5px 8px;border:1px solid var(--border2)'>Same Class</th><th style='padding:5px 8px;border:1px solid var(--border2)'>Same Package</th><th style='padding:5px 8px;border:1px solid var(--border2)'>Subclass</th><th style='padding:5px 8px;border:1px solid var(--border2)'>Outside</th></tr><tr><td style='padding:5px 8px;border:1px solid var(--border2)'>private</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✓</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✗</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✗</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✗</td></tr><tr style='background:var(--surface2)'><td style='padding:5px 8px;border:1px solid var(--border2)'>default</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✓</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✓</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✗</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✗</td></tr><tr><td style='padding:5px 8px;border:1px solid var(--border2)'>protected</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✓</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✓</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✓</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✗</td></tr><tr style='background:var(--surface2)'><td style='padding:5px 8px;border:1px solid var(--border2)'>public</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✓</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✓</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✓</td><td style='padding:5px 8px;border:1px solid var(--border2);text-align:center'>✓</td></tr></table>" }
+        ],
+        "summary": "Java has four access levels: private (same class only), default/package (same package), protected (package + subclasses), and public (everywhere). Fields should be private with public getters/setters. Protected is used in inheritance for shared-but-not-public members.",
+        "sumCards": [
+          { "label": "Private", "content": "Same class only\nBest for fields (encapsulation)" },
+          { "label": "Default (no modifier)", "content": "Same package only\nPackage-private access" },
+          { "label": "Protected", "content": "Same package + subclasses\nUsed in inheritance hierarchies" },
+          { "label": "Public", "content": "Accessible from anywhere\nUse for intended API/interface" }
+        ],
+        "qa": [
+          { "q": "What is the default access level in Java and what does it mean?", "a": "The default access level (package-private) is applied when no modifier is specified. The member is accessible only within the same package — other packages cannot access it, even subclasses in different packages. This is less restrictive than private but more restrictive than protected." },
+          { "q": "Why should class fields generally be declared private?", "a": "Declaring fields private enforces encapsulation — external code cannot directly read or modify the field. This: 1) Protects data integrity (you can validate input in setters). 2) Allows you to change the internal implementation without breaking external code. 3) Makes the class easier to maintain and debug." },
+          { "q": "When would you use 'protected' instead of 'private'?", "a": "Use 'protected' when a field or method should be private to the outside world but needs to be directly accessible by subclasses. Example: a superclass may have a protected 'logger' or internal helper method that subclasses should be able to use. If it were private, subclasses would have to use getters/setters instead of direct access." },
+          { "q": "Can a subclass in a different package access a protected field of its superclass?", "a": "Yes — protected access extends to subclasses in any package (not just the same package). The subclass accesses the protected member through inheritance (via 'this' or the inherited reference), but it cannot access it via a reference to another instance of the superclass outside the subclass context." },
+          { "q": "What is the difference between 'private protected' and 'protected' access?", "a": "'private protected' is mentioned in older Java texts and some course outlines, but it is NOT a valid access modifier in modern Java. Java has exactly four access levels: private, default (no modifier), protected, and public. 'protected' already combines package access with subclass access. The concept was considered in early Java but not implemented." }
+        ]
+      },
+      {
+        "short": "Arrays, Strings & Vectors",
+        "subtitle": "7.1 1D & 2D Arrays · 7.2 Strings · 7.3 Vectors · 7.4 Wrapper Classes",
+        "notes": [
+          { "title": "One-Dimensional Arrays", "body": "An array is a fixed-size, ordered collection of elements of the same type. Creating an array in Java:<br><pre><code>// Declaration and creation\nint[] marks = new int[5];   // array of 5 ints, default 0\nmarks[0] = 85;\nmarks[1] = 92;\n\n// Declaration with initialisation\nString[] names = {\"Alice\", \"Bob\", \"Carol\"};\n\n// Array length\nSystem.out.println(names.length); // 3</code></pre>" },
+          { "title": "Two-Dimensional Arrays", "body": "A 2D array is an array of arrays — represents a table or matrix:<br><pre><code>int[][] matrix = new int[3][4]; // 3 rows, 4 columns\nmatrix[0][0] = 1;\n\n// Initialisation shorthand\nint[][] grid = {\n  {1, 2, 3},\n  {4, 5, 6},\n  {7, 8, 9}\n};\n\n// Iterating\nfor (int i = 0; i < grid.length; i++)\n  for (int j = 0; j < grid[i].length; j++)\n    System.out.print(grid[i][j]);</code></pre>" },
+          { "title": "Strings in Java", "body": "String is a class in Java (not a primitive). String objects are <strong>immutable</strong> — once created, their value cannot be changed. Useful methods: <code>length()</code>, <code>charAt(i)</code>, <code>substring(start, end)</code>, <code>indexOf(str)</code>, <code>toUpperCase()</code>, <code>toLowerCase()</code>, <code>equals(str)</code> (NOT ==), <code>concat(str)</code>, <code>trim()</code>. <strong>StringBuilder</strong> is used when frequent modification is needed (mutable, faster)." },
+          { "title": "Vectors & Wrapper Classes", "body": "<strong>Vector</strong> (java.util.Vector): a dynamic, resizable array — unlike arrays, Vectors grow automatically as elements are added. Thread-safe (synchronized). Common methods: <code>add()</code>, <code>get(index)</code>, <code>size()</code>, <code>remove()</code>.<br><br><strong>Wrapper Classes</strong>: each primitive type has a corresponding class: Integer, Double, Float, Boolean, Character, etc. Allow primitives to be used as objects (e.g., in collections). Key methods: <code>Integer.parseInt()</code>, <code>Integer.valueOf()</code>, <code>Double.parseDouble()</code>. <strong>Autoboxing</strong>: automatic conversion from primitive to wrapper and back." }
+        ],
+        "summary": "Arrays are fixed-size, same-type collections. 2D arrays are arrays of arrays. Strings are immutable objects — use StringBuilder for frequent modifications. Vector is a dynamically resizable, thread-safe array. Wrapper classes allow primitives to be used as objects with autoboxing.",
+        "sumCards": [
+          { "label": "Array Creation", "content": "int[] arr = new int[5];\nint[] arr = {1, 2, 3};\narr.length for size" },
+          { "label": "2D Array", "content": "int[][] m = new int[rows][cols];\nm[row][col] to access" },
+          { "label": "String Methods", "content": "length() · charAt() · substring()\nequals() · indexOf() · toUpperCase()" },
+          { "label": "Wrapper Classes", "content": "int → Integer · double → Double\nInteger.parseInt() · Autoboxing: int ↔ Integer" }
+        ],
+        "qa": [
+          { "q": "What is the difference between an array and a Vector in Java?", "a": "Arrays: fixed size set at creation, faster, can hold primitives or objects, accessed by index. Vector (java.util.Vector): dynamic — grows automatically as elements are added, methods like add() and remove(), only holds objects (not primitives), thread-safe (synchronized). Use Vector (or ArrayList) when the number of elements is unknown or changes frequently." },
+          { "q": "Why should you use equals() instead of == to compare Strings?", "a": "== compares object references (memory addresses) — it checks if two variables point to the same object. For Strings, two String literals may or may not be the same object in memory due to the String pool. equals() compares the actual character content of the strings. Always use equals() for string comparison." },
+          { "q": "What is autoboxing in Java and give an example?", "a": "Autoboxing is Java's automatic conversion between primitive types and their corresponding wrapper classes. Example: Integer i = 42; — Java automatically boxes the int 42 into an Integer object. Unboxing is the reverse: int n = i; — Java automatically extracts the int from the Integer. This allows primitives to be used in collections (List<Integer>)." },
+          { "q": "How would you find the largest value in an int array?", "a": "int[] arr = {5, 2, 8, 1, 9}; int max = arr[0]; for (int i = 1; i < arr.length; i++) { if (arr[i] > max) max = arr[i]; } System.out.println(max); // 9. Initialise max to the first element, then compare each subsequent element." },
+          { "q": "Why is String immutable in Java and what are the implications?", "a": "Strings are immutable for: 1) Thread safety — immutable objects can be shared across threads without synchronisation. 2) Security — String is used for class names, file paths, network connections — immutability prevents tampering. 3) String pool optimisation — JVM can reuse String literals. Implication: operations like concatenation (s + t) create new String objects. Use StringBuilder for repeated modifications to avoid performance issues." }
+        ]
+      }
+    ]
+  }
+}

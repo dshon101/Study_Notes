@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS Study Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f14;
+  --surface: #13161e;
+  --surface2: #1a1d28;
+  --border: #252836;
+  --border2: #2e3245;
+  --text: #e8eaf2;
+  --text2: #9097b8;
+  --text3: #5a6080;
+  --tag-bg: #1e2235;
+  --correct: #2dd4b6;
+  --incorrect: #f76f6f;
+  /* Course accent colors */
+  --crypto-accent: #4f8ef7;
+  --crypto-accent2: #7c5af0;
+  --forensics-accent: #f76f6f;
+  --forensics-accent2: #f5a623;
+  --networks-accent: #2dd4b6;
+  --networks-accent2: #22b5a0;
+  --cloud-accent: #a78bfa;
+  --cloud-accent2: #7c5af0;
+  --oop-accent: #f59e0b;
+  --oop-accent2: #d97706;
+  /* Active course colors (updated by JS) */
+  --accent: #4f8ef7;
+  --accent2: #7c5af0;
+  --accent3: #2dd4b6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Lora', Georgia, serif;
+  font-size: 16px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 22px 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 2px;
+  transition: color 0.3s;
+}
+
+.sidebar-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.sidebar-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 5px;
+}
+
+/* COURSE TABS */
+.course-tabs {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.course-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.18s;
+  border: 1px solid transparent;
+}
+.course-tab:hover { background: var(--surface2); }
+.course-tab.active { background: var(--surface2); border-color: var(--border2); }
+
+.course-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.course-tab[data-course="crypto"] .course-dot { background: var(--crypto-accent); }
+.course-tab[data-course="forensics"] .course-dot { background: var(--forensics-accent); }
+.course-tab[data-course="networks"] .course-dot { background: var(--networks-accent); }
+.course-tab[data-course="cloud"] .course-dot { background: var(--cloud-accent); }
+.course-tab[data-course="oop"] .course-dot { background: var(--oop-accent); }
+
+.course-tab-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+  line-height: 1.2;
+}
+.course-tab.active .course-tab-name { color: var(--text); }
+
+.course-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: auto;
+}
+.course-tab[data-course="crypto"] .course-badge { background: rgba(79,142,247,0.15); color: var(--crypto-accent); }
+.course-tab[data-course="forensics"] .course-badge { background: rgba(247,111,111,0.15); color: var(--forensics-accent); }
+.course-tab[data-course="networks"] .course-badge { background: rgba(45,212,182,0.15); color: var(--networks-accent); }
+.course-tab[data-course="cloud"] .course-badge { background: rgba(167,139,250,0.15); color: var(--cloud-accent); }
+.course-tab[data-course="oop"] .course-badge { background: rgba(245,158,11,0.15); color: var(--oop-accent); }
+
+/* VIEW SWITCHER */
+.view-switcher {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 5px;
+}
+
+.vsw-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 6px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.vsw-btn:hover { border-color: var(--accent); color: var(--accent); }
+.vsw-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.nav-list {
+  list-style: none;
+  padding: 8px 0;
+  flex: 1;
+}
+
+.nav-section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+  padding: 10px 14px 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover { background: var(--surface2); }
+.nav-item.active { background: var(--surface2); border-left-color: var(--accent); }
+.nav-item.active .nav-num { color: var(--accent); }
+.nav-item.active .nav-name { color: var(--text); }
+
+.nav-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  min-width: 18px;
+}
+
+.nav-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  line-height: 1.3;
+}
+
+/* MAIN */
+.main {
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+/* HERO */
+.hero {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 40px 52px 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(var(--accent-rgb, 79,142,247),0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+  transition: color 0.3s;
+}
+
+.hero-heading {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 34px;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.hero-heading span { color: var(--accent); transition: color 0.3s; }
+
+.hero-desc {
+  color: var(--text2);
+  font-size: 14px;
+  max-width: 560px;
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+.hero-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.hero-tag {
+  background: var(--tag-bg);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* COMING SOON */
+.coming-soon {
+  padding: 60px 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.coming-soon-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+.coming-soon-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.coming-soon-desc {
+  font-size: 14px;
+  color: var(--text3);
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+/* CONTENT AREA */
+.content-area { padding: 36px 52px 80px; }
+
+/* NOTES VIEW */
+.note-block {
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.note-block-header {
+  background: var(--surface);
+  padding: 11px 16px;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  transition: background 0.15s, color 0.3s;
+}
+.note-block-header:hover { background: var(--surface2); }
+
+.nbh-arrow { font-size: 10px; color: var(--text3); transition: transform 0.2s; }
+.note-block.open .nbh-arrow { transform: rotate(180deg); }
+
+.note-block-body {
+  display: none;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+.note-block.open .note-block-body { display: block; }
+.note-block-body ul { padding-left: 20px; }
+.note-block-body li { margin-bottom: 5px; }
+
+.summary-strip {
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.65;
+  border: 1px solid rgba(79,142,247,0.25);
+  background: linear-gradient(135deg, rgba(79,142,247,0.07), rgba(124,90,240,0.07));
+}
+.summary-strip strong { color: var(--accent3); }
+
+/* Q&A VIEW */
+.qa-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.qa-card:hover { border-color: var(--border2); }
+.qa-card.revealed { border-color: rgba(79,142,247,0.3); }
+
+.qa-question {
+  padding: 14px 18px;
+  background: var(--surface);
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  user-select: none;
+}
+.qa-question:hover { background: var(--surface2); }
+
+.qa-qnum {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  min-width: 24px;
+  padding-top: 2px;
+  transition: color 0.3s;
+}
+
+.qa-qtext {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.45;
+  flex: 1;
+}
+
+.qa-reveal-hint {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  padding-top: 3px;
+  white-space: nowrap;
+}
+
+.qa-answer {
+  display: none;
+  padding: 14px 18px 16px 54px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.qa-card.revealed .qa-answer { display: block; }
+.qa-card.revealed .qa-reveal-hint { color: var(--accent); }
+
+/* SUMMARY VIEW */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.sum-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.sum-card-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 7px;
+  transition: color 0.3s;
+}
+
+.sum-card-content {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+  font-family: 'DM Mono', monospace;
+}
+
+/* WELCOME */
+.welcome { padding: 36px 52px 80px; }
+.welcome-section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wst-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.welcome-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.welcome-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.welcome-card:hover {
+  transform: translateY(-2px);
+}
+.welcome-card[data-course="crypto"]:hover { border-color: var(--crypto-accent); }
+.welcome-card[data-course="forensics"]:hover { border-color: var(--forensics-accent); }
+.welcome-card[data-course="networks"]:hover { border-color: var(--networks-accent); }
+.welcome-card[data-course="cloud"]:hover { border-color: var(--cloud-accent); }
+.welcome-card[data-course="oop"]:hover { border-color: var(--oop-accent); }
+
+.wc-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  margin-bottom: 5px;
+}
+.welcome-card[data-course="crypto"] .wc-num { color: var(--crypto-accent); }
+.welcome-card[data-course="forensics"] .wc-num { color: var(--forensics-accent); }
+.welcome-card[data-course="networks"] .wc-num { color: var(--networks-accent); }
+.welcome-card[data-course="cloud"] .wc-num { color: var(--cloud-accent); }
+.welcome-card[data-course="oop"] .wc-num { color: var(--oop-accent); }
+
+.wc-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.3;
+}
+.wc-locked { color: var(--text3) !important; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: relative; height: auto; }
+  .hero, .content-area, .welcome { padding: 24px 20px; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .hero-heading { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo" id="sidebarLogo">CS Study Hub</div>
+    <div class="sidebar-title" id="sidebarTitle">All Courses</div>
+    <div class="sidebar-sub" id="sidebarSub">5 courses · click to explore</div>
+  </div>
+
+  <!-- COURSE TABS -->
+  <div class="course-tabs">
+    <div class="course-tab active" data-course="home" onclick="switchCourse('home', this)">
+      <div class="course-dot" style="background:#555"></div>
+      <span class="course-tab-name">All Courses</span>
+    </div>
+    <div class="course-tab" data-course="crypto" onclick="switchCourse('crypto', this)">
+      <div class="course-dot"></div>
+      <span class="course-tab-name">Cryptography</span>
+      <span class="course-badge">13 topics</span>
+    </div>
+    <div class="course-tab" data-course="forensics" onclick="switchCourse('forensics', this)">
+      <div class="course-dot"></div>
+      <span class="course-tab-name">Cyber Forensics</span>
+      <span class="course-badge">5 topics</span>
+    </div>
+    <div class="course-tab" data-course="networks" onclick="switchCourse('networks', this)">
+      <div class="course-dot"></div>
+      <span class="course-tab-name">Computer Networks 1</span>
+      <span class="course-badge">5 topics</span>
+    </div>
+    <div class="course-tab" data-course="cloud" onclick="switchCourse('cloud', this)">
+      <div class="course-dot"></div>
+      <span class="course-tab-name">Cloud Computing</span>
+      <span class="course-badge">5 topics</span>
+    </div>
+    <div class="course-tab" data-course="oop" onclick="switchCourse('oop', this)">
+      <div class="course-dot"></div>
+      <span class="course-tab-name">OOP with Java</span>
+      <span class="course-badge">soon</span>
+    </div>
+  </div>
+
+  <div class="view-switcher" id="viewSwitcher" style="display:none">
+    <button class="vsw-btn active" onclick="setView('notes', this)">Notes</button>
+    <button class="vsw-btn" onclick="setView('qa', this)">Q&amp;A</button>
+    <button class="vsw-btn" onclick="setView('summary', this)">Summary</button>
+  </div>
+
+  <ul class="nav-list" id="navList"></ul>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main" id="mainContent"></main>
+
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// DATA
+// ──────────────────────────────────────────────
+
+const COURSES = {
+
+  crypto: {
+    name: "Cryptography",
+    accent: "#4f8ef7",
+    accent2: "#7c5af0",
+    accent3: "#2dd4b6",
+    topics: [
+      {
+        short: "Intro to Cryptography",
+        subtitle: "1.1 History · 1.2 Goals · 1.3 Basic Terminology · 1.4 Applications",
+        notes: [
+          { title: "History", body: "Cryptography dates back to ~1900 BC (ancient Egypt). Julius Caesar used simple letter substitution. The Vigenère cipher (1553) dominated for centuries. WWII Enigma machine prompted Alan Turing's codebreaking at Bletchley Park. Modern era began in 1976 with Diffie &amp; Hellman's landmark public-key paper, followed by RSA (1977)." },
+          { title: "Goals (CIA + Non-repudiation)", body: "<ul><li><strong>Confidentiality</strong> — only authorised parties can read data</li><li><strong>Integrity</strong> — data has not been altered in transit</li><li><strong>Authentication</strong> — verifying the identity of parties</li><li><strong>Non-repudiation</strong> — sender cannot deny sending a message</li></ul>" },
+          { title: "Basic Terminology", body: "<ul><li><strong>Plaintext (P)</strong> — original readable message</li><li><strong>Ciphertext (C)</strong> — encrypted output</li><li><strong>Encryption</strong> — C = E(K, P)</li><li><strong>Decryption</strong> — P = D(K, C)</li><li><strong>Key (K)</strong> — secret parameter controlling the cipher</li></ul>" },
+          { title: "Kerckhoffs's Principle", body: "A cryptographic system should be secure even if everything about the system, except the key, is public knowledge. Security must NOT rely on keeping the algorithm secret." }
+        ],
+        summary: "Cryptography secures information through mathematical transformations. Four core goals: Confidentiality, Integrity, Authentication, Non-repudiation. The key is secret; the algorithm is public (Kerckhoffs).",
+        sumCards: [
+          { label: "Core Goals", content: "Confidentiality · Integrity · Authentication · Non-repudiation" },
+          { label: "Key Equation", content: "Encrypt: C = E(K,P)\nDecrypt: P = D(K,C)" },
+          { label: "Timeline", content: "1900 BC → Caesar → Enigma → 1976 DH → RSA → AES" },
+          { label: "Applications", content: "HTTPS · PGP · VPN · Signatures · Blockchain · Passwords" }
+        ],
+        qa: [
+          { q: "What are the four main goals of cryptography? Give a real-world example of each.", a: "Confidentiality (encrypted WhatsApp messages), Integrity (file checksums), Authentication (login passwords), Non-repudiation (digitally signed contracts)." },
+          { q: "Explain Kerckhoffs's Principle and why it matters.", a: "The system must remain secure even when the algorithm is fully public. Only the key is secret. This ensures security doesn't depend on obscurity — algorithms can be publicly scrutinised for weaknesses." },
+          { q: "What is the difference between encryption and hashing?", a: "Encryption is reversible with the correct key: C = E(K,P) and P = D(K,C). Hashing is one-way: H(P) → fixed digest. Hashes are used for integrity checks and password storage; encryption for confidentiality of data that must be recovered." },
+          { q: "Name three real-world applications of cryptography.", a: "1) HTTPS/TLS — encrypts web traffic. 2) PGP — end-to-end email encryption. 3) bcrypt/Argon2 — secure password storage using salted hashing." },
+          { q: "Describe one historical example where breaking a cipher changed history.", a: "Breaking the German Enigma at Bletchley Park (WWII) allowed the Allies to decode German military communications, significantly shortening the war. Alan Turing led the effort, creating the Bombe machine." }
+        ]
+      },
+      {
+        short: "Symmetric Encryption",
+        subtitle: "2.1 Block Ciphers · 2.2 DES · 2.3 AES · 2.4 Modes of Operation",
+        notes: [
+          { title: "Block Ciphers", body: "Operate on fixed-size blocks of plaintext (e.g., 64-bit DES, 128-bit AES). Use multiple rounds of substitution and permutation. Key properties: <strong>Confusion</strong> (obscure relationship between key and ciphertext via S-boxes) and <strong>Diffusion</strong> (spread plaintext influence across ciphertext via permutations)." },
+          { title: "DES (Data Encryption Standard)", body: "56-bit key, 64-bit blocks, 16 rounds Feistel structure. Standardised 1977. Now considered <strong>insecure</strong> — key too short (brute-forced in 22 hours in 1999). 3DES (Triple-DES) applies DES three times for extended life but is slow." },
+          { title: "AES (Advanced Encryption Standard)", body: "128-bit block, keys of 128/192/256 bits. Substitution-Permutation Network. Rounds: 10/12/14 depending on key size. Operations: SubBytes (S-box), ShiftRows, MixColumns, AddRoundKey. Currently the global standard — used in TLS, Wi-Fi (WPA2), disk encryption." },
+          { title: "Modes of Operation", body: "<ul><li><strong>ECB</strong> — same block → same ciphertext (insecure, reveals patterns)</li><li><strong>CBC</strong> — XOR with previous ciphertext before encrypting; needs random IV</li><li><strong>CTR</strong> — turns block cipher into stream cipher using counter; parallelisable</li><li><strong>GCM</strong> — CTR + GHASH authentication; provides both encryption and integrity</li></ul>" }
+        ],
+        summary: "Symmetric encryption uses one shared key. AES is the modern standard — 128-bit blocks, up to 256-bit keys. Modes of operation (CBC, CTR, GCM) determine how blocks are chained. Never use ECB for real data.",
+        sumCards: [
+          { label: "DES vs AES", content: "DES: 56-bit key, broken\nAES: 128/192/256-bit, secure" },
+          { label: "AES Operations", content: "SubBytes · ShiftRows · MixColumns · AddRoundKey" },
+          { label: "Block Modes", content: "ECB: insecure · CBC: IV needed · CTR: parallel · GCM: auth" },
+          { label: "Confusion/Diffusion", content: "Confusion: S-boxes hide key\nDiffusion: permutations spread plaintext" }
+        ],
+        qa: [
+          { q: "Why is ECB mode considered insecure?", a: "In ECB, identical plaintext blocks encrypt to identical ciphertext blocks. This leaks patterns in the data — the classic example is an ECB-encrypted image where the outline of the original image is still visible in the ciphertext." },
+          { q: "What are the key sizes for AES and how many rounds does each use?", a: "AES-128: 10 rounds; AES-192: 12 rounds; AES-256: 14 rounds. Block size is always 128 bits regardless of key size." },
+          { q: "Why was DES replaced by AES?", a: "DES uses a 56-bit key, giving only 2^56 ≈ 72 trillion possible keys. In 1999, the EFF's Deep Crack machine brute-forced DES in under 22 hours. The key space is simply too small for modern computing." },
+          { q: "What does GCM mode provide that pure CTR does not?", a: "GCM (Galois/Counter Mode) adds authenticated encryption: it produces an authentication tag (GHASH) alongside the ciphertext. This detects any tampering with the ciphertext. CTR alone only provides confidentiality, not integrity." },
+          { q: "Explain the role of the IV in CBC mode.", a: "The Initialisation Vector (IV) is XORed with the first plaintext block before encryption. It must be random and unique for each message. Without a random IV, identical messages produce identical ciphertext at the start, leaking information about repeated messages." }
+        ]
+      },
+      {
+        short: "Asymmetric Cryptography & RSA",
+        subtitle: "3.1 Public-Key Concepts · 3.2 RSA · 3.3 Key Exchange",
+        notes: [
+          { title: "Public-Key Cryptography", body: "Each party has a key pair: <strong>public key</strong> (freely shared) and <strong>private key</strong> (secret). Anyone can encrypt with the public key; only the private key holder can decrypt. Solves the key distribution problem of symmetric cryptography." },
+          { title: "RSA", body: "Based on the difficulty of factoring large composites. Key generation: choose large primes p, q; n=pq; φ(n)=(p-1)(q-1); choose e coprime to φ(n); d = e⁻¹ mod φ(n). Encrypt: C = M^e mod n. Decrypt: M = C^d mod n. Security requires n ≥ 2048 bits." },
+          { title: "Diffie-Hellman Key Exchange", body: "Two parties agree on g and p. Alice sends g^a mod p, Bob sends g^b mod p. Shared secret = g^(ab) mod p. An eavesdropper sees g^a and g^b but computing g^(ab) requires solving the discrete logarithm problem — computationally infeasible for large p." }
+        ],
+        summary: "Public-key cryptography uses key pairs. RSA relies on factoring hardness; Diffie-Hellman on the discrete logarithm problem. These algorithms solve key distribution but are much slower than symmetric ciphers.",
+        sumCards: [
+          { label: "RSA Formula", content: "Encrypt: C = M^e mod n\nDecrypt: M = C^d mod n" },
+          { label: "Key Generation", content: "n = pq · φ(n) = (p-1)(q-1) · d = e⁻¹ mod φ(n)" },
+          { label: "DH Exchange", content: "Shared secret = g^(ab) mod p\nSecurity: discrete log problem" },
+          { label: "Use Cases", content: "RSA: key wrapping, signatures · DH: TLS key exchange" }
+        ],
+        qa: [
+          { q: "What mathematical problem does RSA security rely on?", a: "The integer factorisation problem. Given n = pq where p and q are large primes (each ~1024 bits), it is computationally infeasible to recover p and q from n alone. Without the factors, an attacker cannot compute φ(n) and thus cannot derive the private key d." },
+          { q: "Encrypt M=7 using RSA with e=3, n=33.", a: "C = 7^3 mod 33 = 343 mod 33. 343 = 10×33 + 13, so C = 13." },
+          { q: "Why is RSA alone not used to encrypt large files?", a: "RSA is computationally very slow compared to symmetric ciphers. In practice, RSA is used to encrypt a small symmetric key (e.g., AES-256 key), and then AES encrypts the actual data. This hybrid approach combines the key-distribution convenience of RSA with the speed of AES." },
+          { q: "What does 'perfect forward secrecy' mean and which protocol provides it?", a: "PFS means that compromise of the long-term private key does not compromise past session keys. Ephemeral Diffie-Hellman (DHE) or Elliptic Curve DHE (ECDHE) in TLS generate a fresh key pair for each session. Even if the server's RSA key is later stolen, recorded past traffic cannot be decrypted." },
+          { q: "Compare symmetric and asymmetric cryptography on speed and key management.", a: "Symmetric (e.g., AES): very fast (hardware acceleration), requires pre-shared secret key — key distribution is a problem. Asymmetric (e.g., RSA): 100–1000x slower, but solves key distribution — anyone can encrypt with a public key. Modern systems use asymmetric crypto to exchange symmetric keys (hybrid encryption)." }
+        ]
+      },
+      {
+        short: "Hash Functions & Digital Signatures",
+        subtitle: "4.1 Hash Properties · 4.2 SHA Family · 4.3 Digital Signatures · 4.4 PKI",
+        notes: [
+          { title: "Cryptographic Hash Properties", body: "<ul><li><strong>Pre-image resistance</strong>: given H(x), cannot find x</li><li><strong>Second pre-image resistance</strong>: given x, cannot find x' ≠ x with H(x) = H(x')</li><li><strong>Collision resistance</strong>: cannot find any x, x' where H(x) = H(x')</li><li><strong>Avalanche effect</strong>: 1-bit change in input → ~50% bits flip in output</li></ul>" },
+          { title: "SHA Family", body: "MD5 (128-bit): broken, collisions found. SHA-1 (160-bit): deprecated, collisions demonstrated (2017 SHAttered). <strong>SHA-256/SHA-3</strong>: current standards. SHA-256 widely used in TLS, Bitcoin. SHA-3 is based on Keccak sponge construction (structurally different from SHA-2)." },
+          { title: "Digital Signatures", body: "Sign with private key: σ = Sign(SK, H(M)). Verify with public key: Verify(PK, M, σ). Provides: <strong>authentication</strong> (only private key holder can sign), <strong>integrity</strong> (any change to M invalidates σ), <strong>non-repudiation</strong> (signer cannot deny). RSA-PSS and ECDSA are standard schemes." },
+          { title: "PKI & Certificates", body: "A <strong>Certificate Authority (CA)</strong> issues X.509 certificates binding a public key to an identity. Browser trusts a set of root CAs. Chain of trust: root CA → intermediate CA → end-entity certificate. Revocation via CRL or OCSP." }
+        ],
+        summary: "Hash functions provide one-way digests with collision resistance. SHA-256 is the current standard. Digital signatures combine hashing with asymmetric crypto for authentication, integrity, and non-repudiation. PKI manages certificate trust chains.",
+        sumCards: [
+          { label: "Hash Properties", content: "Pre-image resist · 2nd pre-image · Collision resist · Avalanche" },
+          { label: "SHA Status", content: "MD5: broken · SHA-1: deprecated · SHA-256/SHA-3: current" },
+          { label: "Digital Signature", content: "Sign: σ = Sign(SK, H(M))\nVerify: Verify(PK, M, σ)" },
+          { label: "PKI Trust Chain", content: "Root CA → Intermediate CA → End-entity cert" }
+        ],
+        qa: [
+          { q: "What is the avalanche effect and why is it important?", a: "A single bit change in input should cause approximately 50% of output bits to change unpredictably. This means an attacker cannot make controlled small changes to a message and predict the hash change — ensuring integrity protection." },
+          { q: "Why was SHA-1 deprecated?", a: "In 2017, Google researchers demonstrated the first SHA-1 collision (SHAttered attack) — two different PDF files with the same SHA-1 hash. This undermines integrity guarantees. All modern systems require SHA-256 or higher." },
+          { q: "How do digital signatures provide non-repudiation?", a: "Only the holder of the private key can produce a valid signature. If Alice signs a document with her private key and the signature verifies against her public key, she cannot later deny signing it — she is the only one who could have produced that signature." },
+          { q: "What is the birthday attack and how does it relate to hash security?", a: "The birthday paradox shows that collisions in a hash function can be found in O(2^(n/2)) operations rather than O(2^n). For a 256-bit hash, collision resistance requires O(2^128) — still secure. This is why SHA-1 (160-bit) only offers ~2^80 collision resistance, which became vulnerable." },
+          { q: "Describe the chain of trust in PKI.", a: "A root CA (self-signed, pre-installed in OS/browser) signs intermediate CA certificates. Intermediate CAs sign end-entity certificates for websites. When you visit a site, your browser verifies the chain: site cert ← signed by intermediate ← signed by root (trusted). If any link breaks or a CA is compromised, the whole chain fails." }
+        ]
+      },
+      {
+        short: "Attacks on Cryptographic Systems",
+        subtitle: "5.1 Brute-Force · 5.2 Replay · 5.3 Chosen-Plaintext/Ciphertext · 5.4 Side-Channel",
+        notes: [
+          { title: "Brute-Force Attacks", body: "Try every possible key until correct plaintext found. Complexity: O(2^k). AES-128 at 10^18 attempts/second takes longer than the age of the universe. Defence: large key sizes. 56-bit DES was broken in 1999; 128-bit AES is safe." },
+          { title: "Replay Attacks", body: "Attacker captures a valid authentication message and retransmits it later. Defence: <strong>nonces</strong> (numbers used once), <strong>timestamps</strong>, sequence numbers — ensure each transaction is unique and time-limited." },
+          { title: "Chosen-Plaintext/Ciphertext Attacks", body: "<ul><li><strong>CPA</strong>: attacker obtains encryptions of chosen plaintexts. Modern ciphers must achieve IND-CPA (semantic security).</li><li><strong>CCA2</strong>: attacker can also query decryption oracle. IND-CCA2 is the strongest notion. RSA-OAEP achieves it; textbook RSA does not.</li></ul>" },
+          { title: "Side-Channel Attacks", body: "<ul><li><strong>Timing</strong>: measure execution time to extract key bits</li><li><strong>Power analysis (DPA)</strong>: measure power consumption of smart card during AES</li><li><strong>Padding oracle</strong>: exploit error messages to decrypt byte-by-byte (POODLE on SSL3)</li><li><strong>Birthday attack</strong>: find hash collisions in O(2^(n/2))</li></ul>" }
+        ],
+        summary: "Attacks range from brute-force to adaptive chosen-ciphertext. Nonces and timestamps prevent replay. IND-CCA2 is the gold standard for cipher security. Side-channel attacks bypass mathematics via physical implementation leaks.",
+        sumCards: [
+          { label: "Brute-force", content: "Try all 2^k keys · Defeated by large keys · AES-128: safe" },
+          { label: "Replay", content: "Reuse captured message · Defence: nonces + timestamps" },
+          { label: "CPA / CCA2", content: "CPA: chosen plaintexts · CCA2: + decryption oracle · Goal: IND-CCA2" },
+          { label: "Side-channel", content: "Timing · Power (DPA) · EM · POODLE padding oracle" }
+        ],
+        qa: [
+          { q: "What is a replay attack? Give a concrete example.", a: "A replay attack captures a legitimate authentication message and retransmits it to gain access. Example: capturing a Kerberos ticket or session token over the network and replaying it to authenticate as the victim. Defence: nonces (one-time random values) ensure each session is unique." },
+          { q: "What is a padding oracle attack?", a: "A padding oracle reports whether decrypted CBC plaintext has valid PKCS#7 padding. An attacker modifies the second-to-last ciphertext block byte-by-byte. When the oracle returns 'valid padding', the plaintext byte is revealed via the XOR relationship. POODLE (2014) exploited this in SSL 3.0." },
+          { q: "Why is IND-CCA2 a stronger security notion than IND-CPA?", a: "IND-CPA security means the attacker cannot distinguish encryptions of two chosen messages. IND-CCA2 additionally allows the attacker to query a decryption oracle for any ciphertext except the target. This models real-world attackers who can observe system responses to tampered ciphertexts." },
+          { q: "Describe a timing side-channel attack on RSA.", a: "Paul Kocher (1996) showed RSA implementations that use non-constant-time modular exponentiation leak information through timing differences — squarings that hit certain key bits take slightly different time. Statistical analysis of many decryption timings can reveal the private key without breaking RSA mathematically." },
+          { q: "What is Differential Power Analysis (DPA)?", a: "DPA measures the power consumption of a cryptographic device (e.g., smart card) during AES execution. Power drawn correlates with the Hamming weight of intermediate values. By statistically correlating power traces with hypothetical key bytes, attackers extract the full AES key without cracking the algorithm mathematically." }
+        ]
+      }
+    ]
+  },
+
+  forensics: {
+    name: "Cyber Forensics",
+    accent: "#f76f6f",
+    accent2: "#f5a623",
+    accent3: "#ffd166",
+    topics: [
+      {
+        short: "Introduction to Cyber Forensics",
+        subtitle: "1.1 Definition · 1.2 Principles · 1.3 Legal Framework · 1.4 Chain of Custody",
+        notes: [
+          { title: "What is Cyber Forensics?", body: "Cyber (digital) forensics is the <strong>scientific collection, preservation, analysis, and presentation</strong> of digital evidence from computers, networks, storage media, and electronic devices — in a manner legally admissible in court. It combines computer science with forensic principles." },
+          { title: "Core Principles", body: "<ul><li><strong>Locard's Exchange Principle</strong>: every interaction leaves a trace. Digital crimes leave artefacts in logs, metadata, memory, slack space.</li><li><strong>Integrity</strong>: evidence must not be altered. Use write-blockers and cryptographic hashes (MD5/SHA-256) to verify.</li><li><strong>Reproducibility</strong>: a second forensic examiner with the same evidence must reach the same conclusions.</li><li><strong>Documentation</strong>: every action must be recorded with timestamps.</li></ul>" },
+          { title: "Chain of Custody", body: "A documented record of <strong>who handled the evidence, when, and what was done</strong>. Any break in the chain can render evidence inadmissible. Includes: collection date/time, name of collector, storage conditions, transfer records, access logs." },
+          { title: "Legal Framework", body: "Evidence must be: <strong>Admissible</strong> (legally obtained), <strong>Authentic</strong> (proven to be what it claims), <strong>Complete</strong> (full picture, not cherry-picked), <strong>Reliable</strong> (tools and methods accepted by courts). In Zambia, the Electronic Communications and Transactions Act governs e-evidence." }
+        ],
+        summary: "Cyber forensics applies scientific methods to digital evidence collection, preservation, and analysis for legal proceedings. Chain of custody, integrity, and reproducibility are non-negotiable principles.",
+        sumCards: [
+          { label: "Four Pillars", content: "Collection · Preservation · Analysis · Presentation" },
+          { label: "Chain of Custody", content: "Who · What · When · Where · How — documented at every step" },
+          { label: "Evidence Admissibility", content: "Admissible · Authentic · Complete · Reliable" },
+          { label: "Locard's Principle", content: "Every interaction leaves a trace — digital artefacts always remain" }
+        ],
+        qa: [
+          { q: "What is chain of custody and why is it critical in digital forensics?", a: "Chain of custody is the documented, chronological record of everyone who handled the evidence, when, and what was done. Without an unbroken chain, defence attorneys can argue the evidence was tampered with or contaminated, making it inadmissible in court." },
+          { q: "How do forensic investigators ensure a disk image hasn't been altered?", a: "Before imaging, compute a cryptographic hash (SHA-256) of the original media using a hardware write-blocker. After imaging, compute the hash of the image. If both hashes match, the image is an exact bit-for-bit copy. Any modification — even 1 bit — would produce a different hash." },
+          { q: "Explain Locard's Exchange Principle in a digital context.", a: "Locard's principle states that every contact leaves a trace. Digitally: accessing a website leaves server logs and browser history; sending an email leaves SMTP headers and mail server records; running malware modifies registry keys and creates prefetch files. These artefacts persist even after attempts to delete them." },
+          { q: "What four criteria must digital evidence meet to be admissible in court?", a: "1) Admissible — collected legally without violating rights. 2) Authentic — provably related to the incident (hashes, metadata). 3) Complete — the full picture is presented, not selective data. 4) Reliable — obtained using validated, court-accepted forensic tools and methods." },
+          { q: "What is a write-blocker and when must it be used?", a: "A write-blocker is a hardware or software device that allows reading from a storage medium while preventing any writes to it. It must be used before connecting any suspect drive to a forensic workstation — without it, simply mounting a drive causes the OS to write timestamps, log entries, and file system metadata, contaminating the evidence." }
+        ]
+      },
+      {
+        short: "Digital Evidence & Acquisition",
+        subtitle: "2.1 Types of Evidence · 2.2 Volatile Data · 2.3 Disk Imaging · 2.4 Tools",
+        notes: [
+          { title: "Types of Digital Evidence", body: "<ul><li><strong>Volatile</strong>: RAM contents, running processes, network connections, clipboard — lost when power off</li><li><strong>Non-volatile</strong>: hard disk, SSD, USB drives, optical media, cloud storage</li><li><strong>Network evidence</strong>: firewall logs, IDS alerts, PCAP captures, DNS queries, DHCP leases</li><li><strong>Application evidence</strong>: browser history, emails, chat logs, documents, databases</li></ul>" },
+          { title: "Order of Volatility (RFC 3227)", body: "Collect in order from most to least volatile: 1) CPU registers &amp; cache, 2) RAM, 3) Network state, 4) Running processes, 5) Disk contents, 6) Remote logs, 7) Archived/backup media. Failure to capture volatile data first means it is lost forever." },
+          { title: "Disk Imaging", body: "Create a bit-for-bit forensic copy (image) of the entire disk, including deleted files, slack space, and unallocated clusters. Tools: <strong>dd</strong> (Linux), <strong>FTK Imager</strong>, <strong>Guymager</strong>. Formats: E01 (Expert Witness Format — includes case metadata), RAW/DD, AFF4. Always verify with hash." },
+          { title: "Key Forensic Tools", body: "<ul><li><strong>Autopsy / Sleuth Kit</strong>: open-source disk/file analysis platform</li><li><strong>Volatility</strong>: RAM dump analysis (processes, network sockets, malware artefacts)</li><li><strong>Wireshark</strong>: network packet capture and analysis</li><li><strong>FTK (Forensic Toolkit)</strong>: commercial all-in-one forensic platform</li><li><strong>EnCase</strong>: enterprise-grade forensic software, court-accepted</li></ul>" }
+        ],
+        summary: "Collect volatile evidence first (RAM → processes → disk). Disk imaging creates exact bit-for-bit copies verified by cryptographic hashes. Use write-blockers to preserve integrity. Autopsy, Volatility, and Wireshark are core open-source tools.",
+        sumCards: [
+          { label: "Order of Volatility", content: "Registers → RAM → Network → Processes → Disk → Backups" },
+          { label: "Disk Image Formats", content: "RAW/DD · E01 (EnCase) · AFF4 — all verified by SHA-256" },
+          { label: "Key Tools", content: "Autopsy · Volatility · Wireshark · FTK · EnCase · dd" },
+          { label: "Evidence Types", content: "Volatile (RAM) · Non-volatile (disk) · Network (PCAP) · Application logs" }
+        ],
+        qa: [
+          { q: "Why must RAM be acquired before the hard disk in an investigation?", a: "RAM is volatile — its contents are permanently lost when the system is powered off. RAM may contain encryption keys (e.g., TrueCrypt containers mounted in memory), running malware code, plaintext credentials, and open network connections. Disk contents persist and can be imaged later; RAM cannot be recovered after shutdown." },
+          { q: "What is 'slack space' and why is it forensically significant?", a: "Slack space is the unused area between the end of a file and the end of its allocated disk cluster. Old data from previous files may reside there. Deleted file fragments can persist in slack space even after the file system marks the cluster as available. Forensic tools like Autopsy recover data from slack space." },
+          { q: "Describe the process of creating and verifying a forensic disk image.", a: "1) Connect drive via hardware write-blocker. 2) Compute SHA-256 hash of source drive. 3) Use FTK Imager or dd to create bit-for-bit image. 4) Compute SHA-256 hash of the image file. 5) Compare hashes — if identical, the image is verified as an exact copy. Document all steps with timestamps in the case notes." },
+          { q: "What information can Volatility extract from a RAM dump?", a: "Volatility can extract: running processes and their parent relationships (pslist, pstree), loaded DLLs and kernel modules (dlllist), open network connections and sockets (netscan), registry hives loaded in memory, plaintext passwords and credentials, injected shellcode in process memory, and artefacts of malware that hides from the file system." },
+          { q: "What is the difference between RAW/DD and E01 forensic image formats?", a: "RAW/DD is a plain bit-for-bit copy with no metadata. E01 (Expert Witness Format by EnCase) is a compressed, chunked format that embeds case metadata (examiner name, date, notes), segment-level checksums for integrity, and supports compression — making it more practical for storage and court presentation." }
+        ]
+      },
+      {
+        short: "File System Forensics",
+        subtitle: "3.1 FAT32 & NTFS · 3.2 File Recovery · 3.3 Metadata · 3.4 Deleted Files",
+        notes: [
+          { title: "FAT32 File System", body: "File Allocation Table uses a table of cluster numbers to track file storage. Directory entries store filename, size, first cluster, and timestamps. When a file is deleted, only the directory entry is marked free — data remains on disk until overwritten. Limitation: max file size 4 GB, max volume 2 TB." },
+          { title: "NTFS (New Technology File System)", body: "Windows default. Uses the <strong>Master File Table (MFT)</strong> — every file and directory has an MFT entry with all attributes: $FILE_NAME (timestamps), $DATA (content), $SECURITY_DESCRIPTOR. NTFS stores small files directly in the MFT (resident data). Journaling ($LogFile, $UsnJrnl) records changes — forensic goldmine." },
+          { title: "File Recovery (Carving)", body: "<strong>File carving</strong> reconstructs files from unallocated space by searching for known file headers (magic bytes) and footers — regardless of file system metadata. Examples: JPEG starts with FF D8 FF; PDF with 25 50 44 46. Tool: <strong>Scalpel</strong>, <strong>PhotoRec</strong>. Works even without a file system." },
+          { title: "Metadata & Timestamps", body: "Files have multiple timestamps: <strong>MACE</strong> = Modified, Accessed, Created, Entry Modified (MFT). Windows stores both $STANDARD_INFORMATION and $FILE_NAME timestamps. Attackers may use timestomping (timestamp manipulation) to cover tracks. $FILE_NAME timestamps are harder to forge as they are updated by the kernel." }
+        ],
+        summary: "NTFS MFT records all file metadata; deleted files remain on disk until overwritten. File carving recovers data from unallocated space using magic bytes. MACE timestamps and NTFS journals are critical forensic artefacts.",
+        sumCards: [
+          { label: "FAT vs NTFS", content: "FAT: table + directory entries\nNTFS: MFT with all attributes + journaling" },
+          { label: "File Recovery", content: "Carving: header/footer magic bytes · Tools: Scalpel, PhotoRec" },
+          { label: "MACE Timestamps", content: "Modified · Accessed · Created · MFT Entry Modified" },
+          { label: "NTFS Journals", content: "$LogFile: FS changes · $UsnJrnl: file-level change history" }
+        ],
+        qa: [
+          { q: "Why can deleted files often be recovered from FAT32 file systems?", a: "In FAT32, deleting a file only marks the first character of its directory entry with 0xE5 (deleted) and marks the FAT entries as free. The actual data clusters are not zeroed out. Until those clusters are reused by a new file, the original data remains recoverable by forensic tools that scan unallocated clusters." },
+          { q: "What is file carving and how does it work without file system metadata?", a: "File carving searches raw disk bytes for known file signatures (magic bytes). E.g., JPEG: FF D8 FF at start, FF D9 at end. The tool extracts all bytes between matching header and footer pairs, reassembling the file without needing directory entries or allocation tables. Scalpel and PhotoRec are common tools." },
+          { q: "What is timestomping and how can it be detected?", a: "Timestomping is the manipulation of file timestamps to hide when a file was created or modified. In NTFS, attackers can change $STANDARD_INFORMATION timestamps with tools like Metasploit's timestomp module. Detection: compare $STANDARD_INFORMATION timestamps with $FILE_NAME timestamps — the kernel updates $FILE_NAME during file operations, making it harder to forge without special privileges." },
+          { q: "Explain the forensic value of the NTFS $UsnJrnl journal.", a: "The $UsnJrnl (Update Sequence Number Journal) records every file system change: file creates, renames, deletes, attribute changes — with timestamps. Unlike $LogFile (transaction log for crash recovery), $UsnJrnl maintains a history of changes that can span days or weeks, revealing what files were created, accessed, or deleted during the investigation window." },
+          { q: "A suspect's NTFS drive shows a file created at 2024-03-15 and last modified at 2022-01-01. What might this indicate?", a: "A file cannot be modified before it is created — a modification date earlier than the creation date is a strong indicator of timestomping. The suspect likely used a timestomping tool to set the modification timestamp to an earlier date to make the file appear old or pre-existing. Examine $FILE_NAME timestamps and $UsnJrnl for the true activity timeline." }
+        ]
+      },
+      {
+        short: "Network Forensics",
+        subtitle: "4.1 Packet Capture · 4.2 Log Analysis · 4.3 Intrusion Artefacts · 4.4 Wireshark",
+        notes: [
+          { title: "Network Forensics Overview", body: "Captures, records, and analyses network traffic to reconstruct events. Operates in two modes: <strong>Catch-it-as-you-can</strong> (capture all packets to storage — high volume) and <strong>Stop-look-listen</strong> (analyse in-memory, only save suspicious traffic). Key goal: answer WHO communicated with WHOM, WHEN, and WHAT was transferred." },
+          { title: "Packet Capture (PCAP)", body: "Full packet capture stores every frame. Tools: <strong>tcpdump</strong> (CLI), <strong>Wireshark</strong> (GUI). Captures: IP addresses, ports, protocols, payload. BPF (Berkeley Packet Filter) syntax for filtering: <code>tcp port 443</code>, <code>host 192.168.1.1</code>. PCAP files are standard evidence format." },
+          { title: "Network Logs", body: "<ul><li><strong>Firewall logs</strong>: allow/deny decisions, source/dest IP:port, timestamps</li><li><strong>IDS/IPS logs</strong>: Snort/Suricata alert signatures (rule match, severity, payload excerpt)</li><li><strong>DNS logs</strong>: domain queries — reveal C2 (command-and-control) communication</li><li><strong>DHCP logs</strong>: IP-to-MAC address mappings — identify which device used an IP at a given time</li><li><strong>Web proxy logs</strong>: full URL, user-agent, referrer, response code</li></ul>" },
+          { title: "Intrusion Artefacts in Traffic", body: "Port scans: many SYN packets to sequential ports from one source. Exfiltration: large outbound transfers to unusual IPs. C2 beaconing: periodic outbound connections at regular intervals (e.g., every 60s) to a single host. DNS tunnelling: unusually long/encoded DNS queries used to exfiltrate data." }
+        ],
+        summary: "Network forensics reconstructs events from packet captures and logs. PCAP files capture full traffic; logs record connection metadata. DNS logs expose C2 domains; DHCP logs link IPs to physical devices. Wireshark is the primary analysis tool.",
+        sumCards: [
+          { label: "PCAP Capture", content: "tcpdump / Wireshark · BPF filters · Full-packet evidence" },
+          { label: "Key Log Types", content: "Firewall · IDS (Snort) · DNS · DHCP · Web proxy" },
+          { label: "Attack Indicators", content: "Port scan (SYN flood) · Exfil (large outbound) · C2 beacon (periodic)" },
+          { label: "DNS Tunnelling", content: "Encoded data in long DNS queries · Bypasses firewall · Detect via length anomalies" }
+        ],
+        qa: [
+          { q: "How can DHCP logs help identify a suspect's device?", a: "DHCP logs record which MAC address was assigned a specific IP address at a given time. If a firewall log shows an attack from 192.168.1.105 at 14:32, the DHCP log reveals that at that time, MAC address AA:BB:CC:DD:EE:FF held that IP. The MAC address can be linked to a specific network interface card and the device it belongs to." },
+          { q: "What is C2 beaconing and how is it detected in network traffic?", a: "C2 (command-and-control) beaconing is when malware on a compromised host makes periodic outbound connections to an attacker's server at regular intervals (e.g., every 60 seconds). Detection: identify hosts with suspiciously regular connection intervals to external IPs using statistical analysis of connection timing; also look for consistent byte sizes in the beacon packets." },
+          { q: "A Wireshark capture shows hundreds of TCP SYN packets to different ports from one IP, with no corresponding SYN-ACK or RST from the target. What is happening?", a: "This is a SYN scan (Nmap -sS). The attacker sends SYN packets to probe which ports are open. Open ports respond with SYN-ACK; closed ports with RST. By sending only SYN (never completing the three-way handshake), the attacker avoids leaving connection logs on some systems. The lack of SYN-ACK responses to most ports means those ports are filtered or closed." },
+          { q: "What is DNS tunnelling and why is it a forensic concern?", a: "DNS tunnelling encodes data (e.g., stolen files, C2 commands) inside DNS query and response payloads. Because DNS traffic (port 53) is almost always permitted through firewalls, it bypasses content filters. Forensically: look for unusually long DNS query names (normal: <30 chars; tunnelling: 100+ encoded chars), high query frequency to a single domain, and base32/base64 encoded subdomains." },
+          { q: "What does a network forensic analyst look for to detect data exfiltration?", a: "Indicators include: 1) Large outbound data volumes to external IPs (especially at off-hours). 2) Connections to known bad IPs or newly registered domains. 3) Use of uncommon ports (e.g., HTTPS over port 8443). 4) Compressed/encrypted archives transferred via FTP or HTTP POST. 5) Sustained high-bandwidth sessions to a single external host. 6) Data transferred via covert channels (DNS, ICMP tunnelling)." }
+        ]
+      },
+      {
+        short: "Incident Response & Reporting",
+        subtitle: "5.1 IR Lifecycle · 5.2 Malware Analysis · 5.3 Forensic Report Writing · 5.4 Anti-forensics",
+        notes: [
+          { title: "Incident Response Lifecycle (NIST SP 800-61)", body: "<ol style='padding-left:18px'><li><strong>Preparation</strong>: IR plan, tools, trained team</li><li><strong>Detection &amp; Analysis</strong>: identify the incident, scope it</li><li><strong>Containment</strong>: isolate affected systems to prevent spread</li><li><strong>Eradication</strong>: remove malware, close vulnerabilities</li><li><strong>Recovery</strong>: restore systems to normal operation, monitor</li><li><strong>Post-Incident Activity</strong>: lessons learned, update defences</li></ol>" },
+          { title: "Malware Analysis", body: "<strong>Static analysis</strong>: examine the malware without running it — strings, PE headers, imports, hash lookups (VirusTotal), disassembly (Ghidra, IDA Pro). <strong>Dynamic analysis</strong>: run malware in a sandbox (Cuckoo, Any.run) and observe behaviour: processes created, registry changes, network connections, files dropped. Both approaches are used together." },
+          { title: "Forensic Report Writing", body: "A forensic report must include: <strong>Executive summary</strong> (non-technical), <strong>Methodology</strong> (tools, procedures), <strong>Findings</strong> (evidence, timeline), <strong>Conclusions</strong> (opinion of the analyst), <strong>Appendices</strong> (hash values, tool output, chain of custody). Must be clear, objective, and reproducible by another examiner." },
+          { title: "Anti-Forensics Techniques", body: "<ul><li><strong>Secure deletion</strong>: overwrite data (Eraser, shred) — countered by checking for overwrite patterns</li><li><strong>Encryption</strong>: BitLocker, VeraCrypt — RAM acquisition may yield keys</li><li><strong>Timestomping</strong>: modify timestamps — detected via $FILE_NAME</li><li><strong>Log clearing</strong>: wipe Windows Event Logs — $LogFile and Volume Shadow Copies may retain evidence</li><li><strong>Steganography</strong>: hide data inside images/audio</li></ul>" }
+        ],
+        summary: "IR follows the NIST 6-phase lifecycle. Malware analysis combines static (Ghidra) and dynamic (sandbox) techniques. Forensic reports must be objective, reproducible, and court-ready. Anti-forensic techniques can be countered with thorough volatile evidence collection and VSS examination.",
+        sumCards: [
+          { label: "IR Phases (NIST)", content: "Prep → Detect → Contain → Eradicate → Recover → Post-Incident" },
+          { label: "Malware Analysis", content: "Static: strings/disassembly · Dynamic: sandbox (Cuckoo, Any.run)" },
+          { label: "Forensic Report", content: "Exec Summary · Methodology · Findings · Conclusions · Appendices" },
+          { label: "Anti-Forensics", content: "Secure delete · Encryption · Timestomp · Log clear · Steganography" }
+        ],
+        qa: [
+          { q: "List the six phases of the NIST incident response lifecycle.", a: "1) Preparation — establish IR capability. 2) Detection & Analysis — identify and scope the incident. 3) Containment — isolate affected systems. 4) Eradication — remove threat (malware, backdoors). 5) Recovery — restore and monitor. 6) Post-Incident Activity — lessons learned and defences improved." },
+          { q: "What is the difference between static and dynamic malware analysis?", a: "Static analysis examines the malware binary without executing it: reading strings, PE headers, imported functions, and disassembling code with Ghidra. It is safe but malware may be obfuscated. Dynamic analysis runs the malware in an isolated sandbox (Cuckoo) and observes what it actually does: files created, registry modifications, network connections — revealing behaviour that obfuscation hides." },
+          { q: "An attacker used Windows Event Log clearing (wevtutil cl) to cover their tracks. What evidence might still remain?", a: "1) VSS (Volume Shadow Copies) — if enabled, previous snapshots may contain the event logs before clearing. 2) The $LogFile and $UsnJrnl may record that wevtutil.exe executed and modified the log files. 3) SIEM/SYSLOG — if logs were forwarded to a remote logging server before clearing, they are intact there. 4) Prefetch files show wevtutil.exe ran and when." },
+          { q: "What are indicators of compromise (IoCs) and give three examples.", a: "IoCs are evidence that a system has been compromised. Examples: 1) Known malware file hash (e.g., MD5 of a trojan) — detected by AV/EDR scanning. 2) Outbound connections to a known C2 IP or domain (e.g., 185.220.x.x). 3) Suspicious registry run key (HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run with unusual entry pointing to temp directory)." },
+          { q: "How might a forensic analyst recover encryption keys from a BitLocker-encrypted drive?", a: "1) Live acquisition — if the system is running and the drive is mounted, acquire RAM and search for the FVEK (Full Volume Encryption Key) using Volatility's bitlocker plugin. 2) Hibernation file (hiberfil.sys) — contains a RAM snapshot; may include the key if the system hibernated while the volume was mounted. 3) TPM + PIN bypass — clone the drive before attempting decryption. 4) Microsoft recovery key — organisations often back up BitLocker keys to Active Directory." }
+        ]
+      }
+    ]
+  },
+
+  networks: {
+    name: "Computer Networks 1",
+    accent: "#2dd4b6",
+    accent2: "#22b5a0",
+    accent3: "#67e8f9",
+    topics: [
+      {
+        short: "Introduction to Networks",
+        subtitle: "1.1 Network Types · 1.2 Topologies · 1.3 OSI Model · 1.4 TCP/IP Stack",
+        notes: [
+          { title: "Network Types", body: "<ul><li><strong>PAN</strong> (Personal Area Network): Bluetooth, ~10m, personal devices</li><li><strong>LAN</strong> (Local Area Network): single building/campus, high speed (1–100 Gbps), privately owned</li><li><strong>MAN</strong> (Metropolitan Area Network): city-wide, e.g., campus backbone, ISP metro rings</li><li><strong>WAN</strong> (Wide Area Network): spans countries/continents, lower speed, public infrastructure (the Internet is the largest WAN)</li></ul>" },
+          { title: "Network Topologies", body: "<ul><li><strong>Bus</strong>: single cable, all nodes share medium, single point of failure, cheap</li><li><strong>Star</strong>: all nodes connect to central switch/hub, easy to manage, hub is SPOF</li><li><strong>Ring</strong>: nodes in a circle, token-passing, failure of one node disrupts ring</li><li><strong>Mesh</strong>: every node connected to every other, highly redundant, expensive</li><li><strong>Hybrid</strong>: combination (star-bus most common in modern LANs)</li></ul>" },
+          { title: "OSI Model (7 Layers)", body: "<ol style='padding-left:18px'><li><strong>Physical</strong>: bits on the wire, cables, voltages</li><li><strong>Data Link</strong>: frames, MAC addresses, error detection (CRC)</li><li><strong>Network</strong>: IP addresses, routing, logical addressing</li><li><strong>Transport</strong>: TCP/UDP, ports, end-to-end delivery</li><li><strong>Session</strong>: session management, dialogue control</li><li><strong>Presentation</strong>: encoding, encryption, compression (SSL/TLS here or Layer 4+)</li><li><strong>Application</strong>: HTTP, FTP, SMTP, DNS</li></ol>" },
+          { title: "TCP/IP Model (4 Layers)", body: "Practical alternative to OSI: <strong>Network Access</strong> (OSI 1+2), <strong>Internet</strong> (OSI 3 — IP), <strong>Transport</strong> (OSI 4 — TCP/UDP), <strong>Application</strong> (OSI 5–7). Data encapsulation: Application data → Transport adds header (segment) → IP adds header (packet) → Data Link adds header+trailer (frame) → Physical transmits bits." }
+        ],
+        summary: "Networks are classified by geographic scope (PAN→WAN). The OSI 7-layer and TCP/IP 4-layer models define protocols at each layer. Data is encapsulated as it moves down the stack: data → segment → packet → frame → bits.",
+        sumCards: [
+          { label: "Network Types", content: "PAN (10m) → LAN (building) → MAN (city) → WAN (global)" },
+          { label: "OSI Layers", content: "7:App · 6:Pres · 5:Session · 4:Transport · 3:Network · 2:DataLink · 1:Physical" },
+          { label: "TCP/IP Stack", content: "Application → Transport → Internet → Network Access" },
+          { label: "Encapsulation", content: "Data → Segment → Packet → Frame → Bits" }
+        ],
+        qa: [
+          { q: "What are the 7 layers of the OSI model? Give a protocol example for layers 3, 4, and 7.", a: "1-Physical, 2-Data Link, 3-Network (IP), 4-Transport (TCP/UDP), 5-Session, 6-Presentation, 7-Application (HTTP, DNS, SMTP). Layer 3: IP handles logical addressing and routing. Layer 4: TCP provides reliable delivery with flow control. Layer 7: HTTP defines how web browsers and servers exchange data." },
+          { q: "Compare TCP and UDP. When would you use each?", a: "TCP: connection-oriented, reliable (ACKs, retransmission), ordered delivery, flow/congestion control — use for web (HTTP), email (SMTP), file transfer (FTP). UDP: connectionless, no guarantees, low overhead — use for real-time applications where speed matters more than reliability: VoIP, DNS queries, video streaming, online gaming." },
+          { q: "Explain data encapsulation as a packet moves from browser to network wire.", a: "HTTP creates application data. TCP adds a header (src/dest ports, seq number) → segment. IP adds a header (src/dest IP) → packet. Ethernet adds MAC header + trailer (CRC) → frame. NIC converts frame to electrical/optical signals → bits on the wire. The reverse (de-encapsulation) occurs at the receiving end." },
+          { q: "What is the difference between a hub, a switch, and a router?", a: "Hub (Layer 1): broadcasts every frame to all ports — creates a single collision domain. Switch (Layer 2): forwards frames only to the correct port using MAC address table — separate collision domains per port. Router (Layer 3): connects different networks using IP addresses, makes routing decisions, separates broadcast domains." },
+          { q: "Why does modern networking use the TCP/IP model rather than the OSI model in practice?", a: "The TCP/IP model was developed alongside the actual Internet protocols (TCP, IP, UDP) and reflects how they work. OSI was a theoretical framework developed by ISO — its session and presentation layers are rarely distinct in practice. TCP/IP's 4-layer model maps directly to real implementation: OS handles transport/internet, NIC handles network access, applications implement app-layer protocols." }
+        ]
+      },
+      {
+        short: "IP Addressing & Subnetting",
+        subtitle: "2.1 IPv4 · 2.2 Subnetting (CIDR) · 2.3 IPv6 · 2.4 DHCP & DNS",
+        notes: [
+          { title: "IPv4 Addressing", body: "32-bit address, written as 4 octets (e.g., 192.168.1.10). Classes: A (0-127, /8), B (128-191, /16), C (192-223, /24). <strong>Private ranges</strong>: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 — not routable on the Internet. <strong>Loopback</strong>: 127.0.0.1. Total addresses: 2^32 ≈ 4.3 billion — exhausted in 2011." },
+          { title: "Subnetting (CIDR)", body: "CIDR notation: address/prefix-length (e.g., 192.168.1.0/24). Subnet mask defines which bits are network vs host. /24 = 255.255.255.0 → 256 addresses, 254 usable (first=network, last=broadcast). Formula: hosts = 2^(32-prefix) − 2. Subnetting divides a large network into smaller logical segments for efficiency and security." },
+          { title: "IPv6", body: "128-bit addresses (2^128 ≈ 3.4×10^38). Written as 8 groups of 4 hex digits (e.g., 2001:0db8:85a3::8a2e:0370:7334). :: abbreviates consecutive zero groups. No broadcast — uses multicast. <strong>Link-local</strong>: fe80::/10. <strong>Auto-configuration</strong>: SLAAC (Stateless Address Autoconfiguration) — no DHCP needed." },
+          { title: "DHCP & DNS", body: "<strong>DHCP</strong>: dynamically assigns IP, subnet mask, default gateway, DNS server. Process: DISCOVER → OFFER → REQUEST → ACK (DORA). <strong>DNS</strong>: resolves domain names to IPs. Hierarchy: root (.) → TLD (.com, .zm) → authoritative nameserver. Record types: A (IPv4), AAAA (IPv6), MX (mail), CNAME (alias), NS (nameserver)." }
+        ],
+        summary: "IPv4 uses 32-bit addresses (exhausted 2011); IPv6 uses 128-bit. CIDR subnetting divides address space efficiently. DHCP automates IP assignment (DORA); DNS resolves names to IPs through a hierarchical tree.",
+        sumCards: [
+          { label: "IPv4 Private Ranges", content: "10.0.0.0/8 · 172.16.0.0/12 · 192.168.0.0/16" },
+          { label: "CIDR Formula", content: "Hosts = 2^(32−prefix) − 2\n/24 → 254 hosts · /25 → 126" },
+          { label: "DHCP DORA", content: "Discover → Offer → Request → Acknowledge" },
+          { label: "DNS Records", content: "A: IPv4 · AAAA: IPv6 · MX: mail · CNAME: alias · NS: nameserver" }
+        ],
+        qa: [
+          { q: "How many usable host addresses are in a /26 subnet?", a: "A /26 subnet has 32−26 = 6 host bits. Total addresses = 2^6 = 64. Usable hosts = 64 − 2 = 62 (subtract network address and broadcast address)." },
+          { q: "A host has IP 172.20.15.200/20. What is the network address and broadcast address?", a: "/20 = 255.255.240.0. The third octet mask is 240 (11110000). Network: 172.20.(15 & 240).0 = 172.20.0.0. Wait: 15 & 240 = 0 (15 = 00001111, 240 = 11110000, AND = 00000000). Network: 172.20.0.0. Broadcast: last host = 172.20.15.255." },
+          { q: "What is the purpose of private IP address ranges and how do they reach the Internet?", a: "Private ranges (10.x.x.x, 172.16-31.x.x, 192.168.x.x) are not routable on the public Internet, allowing unlimited reuse internally without purchasing public IPs. They reach the Internet through NAT (Network Address Translation) on the router, which replaces private source IPs with the public IP when forwarding packets outbound." },
+          { q: "Explain the DNS resolution process when you type 'www.google.com' in a browser.", a: "1) Browser checks local DNS cache. 2) Queries local resolver (from DHCP). 3) Resolver queries root nameserver → told to ask .com TLD server. 4) TLD server → told to ask Google's authoritative NS. 5) Google's NS returns the A record (IP address). 6) Resolver caches the result (TTL) and returns IP to browser. 7) Browser connects to that IP." },
+          { q: "What advantages does IPv6 have over IPv4?", a: "1) Enormous address space: 2^128 vs 2^32 — eliminates address exhaustion. 2) No broadcast — multicast reduces network traffic. 3) IPSec built-in (mandatory in IPv6 spec). 4) SLAAC — auto-configure without DHCP. 5) Simplified header (fewer fields, no checksum) — faster routing. 6) No NAT needed — end-to-end connectivity restored." }
+        ]
+      },
+      {
+        short: "Routing & Switching",
+        subtitle: "3.1 Ethernet & MAC · 3.2 VLANs · 3.3 Static vs Dynamic Routing · 3.4 OSPF & BGP",
+        notes: [
+          { title: "Ethernet & MAC Addresses", body: "Ethernet (IEEE 802.3): dominant LAN technology. Frames have src/dest <strong>MAC addresses</strong> (48-bit, hardware address, e.g., AA:BB:CC:DD:EE:FF). Switches learn MAC→port mappings in a CAM table. <strong>ARP</strong> (Address Resolution Protocol): maps IP to MAC — 'Who has 192.168.1.1? Tell 192.168.1.50'. VLAN-tagged frames use IEEE 802.1Q (adds 4-byte tag)." },
+          { title: "VLANs (Virtual LANs)", body: "Logically segment a switch into multiple broadcast domains without physical separation. Benefits: security (Finance VLAN can't reach HR VLAN by default), reduces broadcast traffic, flexibility. <strong>Access port</strong>: untagged, connects end devices to one VLAN. <strong>Trunk port</strong>: carries tagged frames for multiple VLANs (between switches/routers). Inter-VLAN routing requires a router or Layer 3 switch." },
+          { title: "Static vs Dynamic Routing", body: "<strong>Static routes</strong>: manually configured, predictable, no overhead, doesn't adapt to failures. Used in small networks or for default routes. <strong>Dynamic routing</strong>: routers exchange routing information automatically using protocols. Adapts to topology changes. Categories: IGP (within an AS) vs EGP (between ASes)." },
+          { title: "OSPF & BGP", body: "<strong>OSPF</strong> (Open Shortest Path First): link-state IGP. Each router knows full topology → runs Dijkstra's SPF algorithm → builds shortest-path tree. Uses areas for scalability. Metric: cost (= 100Mbps/bandwidth). <strong>BGP</strong> (Border Gateway Protocol): the Internet's routing protocol — path-vector EGP between Autonomous Systems. Uses policy-based routing, not just shortest path." }
+        ],
+        summary: "Switches use MAC address tables to forward frames; ARP maps IPs to MACs. VLANs logically segment networks. OSPF computes shortest paths within an AS using Dijkstra; BGP routes between ASes using policy.",
+        sumCards: [
+          { label: "ARP Process", content: "Broadcast: Who has IP x? → Reply: IP x is at MAC y" },
+          { label: "VLAN Ports", content: "Access port: 1 VLAN, untagged\nTrunk port: many VLANs, 802.1Q tagged" },
+          { label: "OSPF vs BGP", content: "OSPF: intra-AS, link-state, Dijkstra · BGP: inter-AS, path-vector, policy" },
+          { label: "Routing Types", content: "Static: manual, predictable · Dynamic: auto-updates, adaptive" }
+        ],
+        qa: [
+          { q: "A switch receives a frame with an unknown destination MAC. What does it do?", a: "The switch floods the frame out all ports except the one it arrived on. This is called an unknown unicast flood. When the destination replies, the switch learns its MAC address and port, adding it to the CAM table. Future frames to that MAC will be forwarded only to the correct port." },
+          { q: "What problem do VLANs solve and what is required for inter-VLAN communication?", a: "VLANs solve the problem of a flat network where all devices share one broadcast domain — reducing security, performance, and manageability. By default, VLANs cannot communicate with each other. Inter-VLAN routing requires either a router (router-on-a-stick with 802.1Q trunk) or a Layer 3 switch with SVI (Switched Virtual Interfaces)." },
+          { q: "How does OSPF determine the 'best' path to a destination?", a: "OSPF uses cost as its metric, where cost = reference bandwidth / interface bandwidth (default ref = 100 Mbps). A 1 Gbps link has cost 1; a 10 Mbps link has cost 10. Each router maintains a complete link-state database (LSDB) and runs Dijkstra's Shortest Path First algorithm to compute the lowest-cost path to every network." },
+          { q: "Why is BGP described as the 'protocol of the Internet'?", a: "The Internet consists of thousands of Autonomous Systems (AS) — independent organisations like ISPs, universities, and companies. BGP (Border Gateway Protocol) is the only EGP (exterior gateway protocol) that routes between ASes. It carries the full global routing table (~900,000 prefixes). Unlike OSPF, BGP makes routing decisions based on policy (business relationships) rather than just shortest path." },
+          { q: "Explain ARP poisoning and what it enables an attacker to do.", a: "ARP has no authentication — any device can send an ARP reply claiming to own any IP address. In ARP poisoning, the attacker broadcasts fake ARP replies associating their MAC with the gateway's IP. Victims update their ARP cache to route traffic through the attacker's machine. This enables a man-in-the-middle attack — the attacker sees, modifies, or drops all traffic before forwarding it." }
+        ]
+      },
+      {
+        short: "Transport Layer: TCP & UDP",
+        subtitle: "4.1 TCP Three-Way Handshake · 4.2 Flow & Congestion Control · 4.3 UDP · 4.4 Ports",
+        notes: [
+          { title: "TCP Three-Way Handshake", body: "Connection establishment: <strong>SYN</strong> (client → server, ISN_c), <strong>SYN-ACK</strong> (server → client, ISN_s, ACK=ISN_c+1), <strong>ACK</strong> (client → server, ACK=ISN_s+1). Connection teardown: FIN → FIN-ACK → FIN → ACK (4-way). Initial Sequence Numbers (ISNs) are random to prevent spoofing." },
+          { title: "TCP Reliability Mechanisms", body: "<ul><li><strong>Sequence numbers</strong>: order segments, detect gaps</li><li><strong>Acknowledgements (ACKs)</strong>: cumulative — ACK n means 'received all bytes up to n-1'</li><li><strong>Retransmission</strong>: if no ACK within RTO (retransmission timeout), retransmit</li><li><strong>Flow control</strong>: receiver advertises window size to prevent buffer overflow</li><li><strong>Congestion control</strong>: slow start, congestion avoidance, fast retransmit (Tahoe/Reno/CUBIC)</li></ul>" },
+          { title: "UDP (User Datagram Protocol)", body: "Connectionless, no handshake, no ACKs, no ordering, no retransmission. Best-effort delivery. <strong>Advantages</strong>: very low latency, no connection setup overhead. Used by: DNS (port 53), DHCP (67/68), VoIP, video streaming, QUIC (HTTP/3). Applications handle reliability themselves if needed." },
+          { title: "Well-Known Ports", body: "<ul><li>20/21: FTP (data/control)</li><li>22: SSH · 23: Telnet</li><li>25/587: SMTP · 110: POP3 · 143: IMAP</li><li>53: DNS · 67/68: DHCP</li><li>80: HTTP · 443: HTTPS</li><li>3389: RDP · 3306: MySQL</li></ul>Ports 0–1023: well-known (root). 1024–49151: registered. 49152–65535: ephemeral (client)." }
+        ],
+        summary: "TCP is reliable, ordered, connection-oriented — uses 3-way handshake, ACKs, retransmission, and flow control. UDP is lightweight and connectionless — used for latency-sensitive applications. Ports identify applications on a host.",
+        sumCards: [
+          { label: "3-Way Handshake", content: "SYN → SYN-ACK → ACK (connection)\nFIN → FIN-ACK → FIN → ACK (teardown)" },
+          { label: "TCP Reliability", content: "Seq numbers · ACKs · Retransmission · Window (flow) · Slow start (congestion)" },
+          { label: "TCP vs UDP", content: "TCP: reliable, ordered, slow · UDP: unreliable, fast, no handshake" },
+          { label: "Key Ports", content: "22:SSH · 53:DNS · 80:HTTP · 443:HTTPS · 3389:RDP" }
+        ],
+        qa: [
+          { q: "Describe the TCP three-way handshake step by step.", a: "1) Client sends SYN segment with random Initial Sequence Number (ISN_c) to server. 2) Server responds with SYN-ACK: acknowledges client's ISN (ACK = ISN_c + 1) and includes its own random ISN (ISN_s). 3) Client sends ACK: acknowledges server's ISN (ACK = ISN_s + 1). The connection is now established and data can flow." },
+          { q: "What is TCP slow start and why is it necessary?", a: "Slow start is TCP's congestion control mechanism for new connections. The congestion window (cwnd) starts at 1 MSS and doubles every RTT (exponential growth) until it reaches the slow-start threshold (ssthresh) or a packet loss event. This prevents a new TCP connection from immediately flooding the network at full speed before it knows the available bandwidth." },
+          { q: "Why does DNS use UDP instead of TCP?", a: "DNS queries are small (typically <512 bytes) and need to be fast. UDP has no connection setup overhead (no 3-way handshake), making it much faster for short request-response transactions. If a UDP DNS response exceeds 512 bytes (e.g., DNSSEC responses), DNS falls back to TCP. Speed and simplicity matter more than reliability for most DNS lookups." },
+          { q: "What is a SYN flood attack and how does SYN cookies mitigate it?", a: "A SYN flood sends millions of SYN packets with spoofed source IPs. The server allocates a half-open connection for each, filling its connection table until legitimate connections are rejected (DoS). SYN cookies: instead of allocating state, the server encodes session information into the ISN of the SYN-ACK. State is only allocated when a valid ACK returns, so spoofed SYNs (which never get ACKed) waste no resources." },
+          { q: "A client connects to a web server. Identify the source and destination port numbers in both directions.", a: "Client → Server: source port = ephemeral (random high port, e.g., 54321), destination port = 80 (HTTP) or 443 (HTTPS). Server → Client: source port = 80 (or 443), destination port = 54321 (the client's ephemeral port). The 4-tuple (src IP, src port, dst IP, dst port) uniquely identifies the TCP connection." }
+        ]
+      },
+      {
+        short: "Network Security Fundamentals",
+        subtitle: "5.1 Firewalls · 5.2 VPN · 5.3 Common Attacks · 5.4 Network Hardening",
+        notes: [
+          { title: "Firewalls", body: "<ul><li><strong>Packet filter</strong>: checks IP/port headers (stateless, fast, limited)</li><li><strong>Stateful inspection</strong>: tracks connection state, only allows return traffic for established sessions</li><li><strong>NGFW (Next-Gen)</strong>: deep packet inspection, application awareness (Layer 7), IPS integration, user identity</li><li><strong>WAF</strong> (Web App Firewall): inspects HTTP — blocks SQLi, XSS, etc.</li></ul>" },
+          { title: "VPN (Virtual Private Network)", body: "Creates an encrypted tunnel over an untrusted network. <strong>IPSec</strong>: operates at Layer 3, two modes: Transport (encrypts payload only) and Tunnel (encrypts entire IP packet — used for site-to-site VPNs). <strong>SSL/TLS VPN</strong>: operates at Layer 4/7, uses browser/client — easier to deploy (OpenVPN, WireGuard). Provides confidentiality, integrity, authentication." },
+          { title: "Common Network Attacks", body: "<ul><li><strong>DoS/DDoS</strong>: flood traffic to exhaust resources</li><li><strong>MITM</strong>: intercept traffic (ARP poisoning, rogue AP)</li><li><strong>Port scanning</strong>: Nmap to discover open ports/services</li><li><strong>Sniffing</strong>: capture unencrypted traffic (Wireshark on same network)</li><li><strong>DNS spoofing</strong>: return false DNS responses to redirect traffic</li></ul>" },
+          { title: "Network Hardening", body: "<ul><li>Disable unused ports and services</li><li>Use VLANs to segment sensitive systems</li><li>Implement 802.1X port authentication (NAC)</li><li>Enable DHCP snooping, Dynamic ARP Inspection (DAI)</li><li>Use encrypted protocols: SSH (not Telnet), HTTPS (not HTTP), SFTP (not FTP)</li><li>Patch regularly — most attacks exploit known vulnerabilities</li></ul>" }
+        ],
+        summary: "NGFWs provide stateful + application-layer filtering. VPNs encrypt traffic using IPSec (Layer 3) or TLS (Layer 4). DDoS, MITM, and ARP poisoning are common network attacks. Hardening involves segmentation, authentication, and protocol encryption.",
+        sumCards: [
+          { label: "Firewall Types", content: "Packet filter · Stateful · NGFW (L7, DPI) · WAF (HTTP)" },
+          { label: "VPN Protocols", content: "IPSec: Transport / Tunnel modes\nTLS VPN: OpenVPN, WireGuard" },
+          { label: "Attack Types", content: "DDoS · MITM · Sniffing · Port scan · DNS spoof" },
+          { label: "Hardening", content: "VLANs · 802.1X · DHCP snooping · DAI · Encrypted protocols" }
+        ],
+        qa: [
+          { q: "What is the difference between a stateless and stateful firewall?", a: "A stateless (packet filter) firewall inspects each packet independently based on header fields (IP, port, protocol) — it has no memory of previous packets. A stateful firewall tracks TCP connection state — it allows return traffic only for established sessions. Stateless can be spoofed with crafted packets that appear to be return traffic; stateful cannot." },
+          { q: "Explain how IPSec Tunnel mode works and where it is typically deployed.", a: "In Tunnel mode, IPSec encrypts the entire original IP packet (header + data) and adds a new outer IP header for routing. This hides both the payload and the original source/destination IPs. It is used for site-to-site VPNs between corporate offices — the tunnel endpoints are the gateways, not the end hosts." },
+          { q: "What is a DDoS attack and what distinguishes it from DoS?", a: "A DoS (Denial of Service) attack comes from a single source, flooding a target to exhaust bandwidth, connections, or compute resources. A DDoS (Distributed DoS) uses thousands of compromised machines (a botnet) to amplify the attack volume, making it much harder to block — filtering one IP is useless when the attack comes from 100,000 IPs simultaneously." },
+          { q: "What does Dynamic ARP Inspection (DAI) do and what attack does it prevent?", a: "DAI inspects all ARP packets on a switch. It checks them against a DHCP snooping binding table (trusted IP-to-MAC-to-port mappings). ARP replies that don't match the table are dropped. This prevents ARP poisoning/spoofing attacks, where an attacker sends fake ARP replies to associate their MAC with the default gateway's IP." },
+          { q: "Why should Telnet be replaced with SSH for network device management?", a: "Telnet transmits all data — including usernames, passwords, and configuration commands — in clear text. Anyone on the same network segment can capture Telnet sessions with Wireshark and read credentials. SSH encrypts the entire session using TLS-like mechanisms. Additionally, SSH supports key-based authentication, which is stronger than password-based login." }
+        ]
+      }
+    ]
+  },
+
+  cloud: {
+    name: "Cloud Computing",
+    accent: "#a78bfa",
+    accent2: "#7c5af0",
+    accent3: "#c4b5fd",
+    topics: [
+      {
+        short: "Introduction to Cloud Computing",
+        subtitle: "1.1 Definition · 1.2 NIST Model · 1.3 Deployment Models · 1.4 Benefits & Risks",
+        notes: [
+          { title: "What is Cloud Computing?", body: "NIST definition: <em>'A model for enabling ubiquitous, convenient, on-demand network access to a shared pool of configurable computing resources that can be rapidly provisioned and released with minimal management effort.'</em> Key concept: <strong>pay-as-you-go</strong> IT infrastructure delivered over the Internet, eliminating the need to own physical hardware." },
+          { title: "Five Essential Characteristics (NIST)", body: "<ol style='padding-left:18px'><li><strong>On-demand self-service</strong>: provision resources without human interaction</li><li><strong>Broad network access</strong>: accessible via standard mechanisms (laptop, phone)</li><li><strong>Resource pooling</strong>: multi-tenant, dynamically assigned</li><li><strong>Rapid elasticity</strong>: scale in/out quickly, appear unlimited</li><li><strong>Measured service</strong>: metered, pay only for what you use</li></ol>" },
+          { title: "Deployment Models", body: "<ul><li><strong>Public cloud</strong>: owned by provider (AWS, Azure, GCP), shared infrastructure, lowest cost</li><li><strong>Private cloud</strong>: dedicated to one organisation, on-premises or hosted — higher control, higher cost</li><li><strong>Community cloud</strong>: shared by organisations with common concerns (e.g., healthcare, government)</li><li><strong>Hybrid cloud</strong>: mix of public + private, connected by technology — balance cost vs control</li></ul>" },
+          { title: "Benefits & Risks", body: "<strong>Benefits</strong>: reduced capital expenditure, global reach, scalability, resilience, faster innovation, pay-per-use.<br><strong>Risks</strong>: vendor lock-in, data sovereignty (where is your data?), multi-tenancy security, dependence on Internet connectivity, loss of direct control over infrastructure." }
+        ],
+        summary: "Cloud computing provides on-demand, pay-per-use computing over the Internet. NIST defines 5 characteristics. Deployment models range from public (cheapest) to private (most control) to hybrid (balanced). Key risk: loss of control and vendor lock-in.",
+        sumCards: [
+          { label: "NIST 5 Characteristics", content: "On-demand · Broad access · Pooled · Elastic · Measured" },
+          { label: "Deployment Models", content: "Public: shared, cheapest · Private: dedicated · Hybrid: mixed" },
+          { label: "Top Benefits", content: "No CapEx · Scalable · Global · Pay-per-use · Resilient" },
+          { label: "Top Risks", content: "Vendor lock-in · Data sovereignty · Multi-tenancy · Connectivity dependence" }
+        ],
+        qa: [
+          { q: "State and explain the five essential characteristics of cloud computing according to NIST.", a: "1) On-demand self-service — users provision compute, storage etc. without provider interaction. 2) Broad network access — accessible from any device via standard network. 3) Resource pooling — provider's resources serve multiple tenants dynamically. 4) Rapid elasticity — resources can scale out/in quickly; appear unlimited. 5) Measured service — usage is monitored and billed, like a utility." },
+          { q: "Compare public and private cloud deployment models.", a: "Public cloud: infrastructure is owned, operated, and shared by a third-party provider (e.g., AWS). Multiple organisations share the same hardware (multi-tenancy). Low cost, globally available, no hardware maintenance. Risk: less control, data on shared infrastructure. Private cloud: dedicated to one organisation, either on-premises or hosted. Higher control and security, but higher cost and requires in-house expertise." },
+          { q: "A Zambian bank wants to use cloud computing but must keep customer data inside Zambia. Which model is most appropriate?", a: "A private cloud deployed on-premises or in a Zambian data centre is most appropriate. It provides cloud benefits (elasticity, self-service) while ensuring data sovereignty — all data remains within Zambia under the bank's direct control. A community cloud with other Zambian financial institutions is also possible if regulatory frameworks allow." },
+          { q: "What is vendor lock-in in cloud computing and how can it be mitigated?", a: "Vendor lock-in occurs when an organisation becomes so dependent on a specific cloud provider's proprietary services that migrating to another provider is prohibitively complex or expensive. Mitigation: use open standards and portable formats, adopt a multi-cloud strategy, containerise applications (Docker/Kubernetes) so they run on any cloud, and avoid heavy use of provider-specific managed services where alternatives exist." },
+          { q: "Explain rapid elasticity and give a business scenario where it provides value.", a: "Rapid elasticity means computing resources can be quickly scaled up or down based on demand. Scenario: an online retailer hosts their store on AWS. During Black Friday, traffic spikes 10x. Auto-scaling automatically provisions extra EC2 instances and load balancers to handle the surge. After the sale, instances are terminated. The retailer pays only for the extra capacity used during the peak — without buying permanent hardware." }
+        ]
+      },
+      {
+        short: "Cloud Service Models",
+        subtitle: "2.1 IaaS · 2.2 PaaS · 2.3 SaaS · 2.4 Shared Responsibility",
+        notes: [
+          { title: "IaaS – Infrastructure as a Service", body: "Provider manages: physical hardware, network, virtualisation layer. Customer manages: OS, middleware, runtime, applications, data. Examples: <strong>AWS EC2</strong>, <strong>Azure Virtual Machines</strong>, <strong>Google Compute Engine</strong>. Best for: teams who need full OS control, custom configurations, lift-and-shift migrations." },
+          { title: "PaaS – Platform as a Service", body: "Provider manages: infrastructure + OS + runtime. Customer manages: applications and data only. Examples: <strong>AWS Elastic Beanstalk</strong>, <strong>Google App Engine</strong>, <strong>Heroku</strong>. Best for: developers who want to deploy code without managing servers. Enables rapid development." },
+          { title: "SaaS – Software as a Service", body: "Provider manages everything. Customer only uses the application via browser. Examples: <strong>Gmail, Microsoft 365, Salesforce, Zoom</strong>. No installation, no maintenance. Limited customisation. Best for: end-user productivity applications." },
+          { title: "Shared Responsibility Model", body: "Critical concept for security. Cloud provider is responsible for security <strong>OF</strong> the cloud (physical, network, virtualisation). Customer is responsible for security <strong>IN</strong> the cloud. In IaaS: customer patches OS and secures apps. In PaaS: customer secures apps and data. In SaaS: customer manages accounts and access control." }
+        ],
+        summary: "IaaS gives max control (you manage OS up). PaaS abstracts infrastructure (you manage app + data). SaaS is full turnkey (you manage accounts only). The shared responsibility model defines who secures what — customer responsibility decreases from IaaS to SaaS.",
+        sumCards: [
+          { label: "IaaS", content: "You manage: OS → App → Data\nExamples: EC2, Azure VM, GCE" },
+          { label: "PaaS", content: "You manage: App + Data only\nExamples: Heroku, App Engine, Beanstalk" },
+          { label: "SaaS", content: "You manage: accounts/access only\nExamples: Gmail, Salesforce, Office 365" },
+          { label: "Shared Responsibility", content: "Provider: security OF cloud\nCustomer: security IN cloud" }
+        ],
+        qa: [
+          { q: "A startup wants to deploy a web app without managing servers. Which service model is best?", a: "PaaS (Platform as a Service). The startup pushes their code to a platform like Heroku or Google App Engine. The provider handles OS, runtime, scaling, and patching. The developers only manage their application code and database — no servers to configure or maintain." },
+          { q: "Explain the shared responsibility model for IaaS.", a: "In IaaS, the cloud provider secures the physical data centres, hardware, network, and hypervisor layer. The customer is responsible for everything from the OS upwards: patching the operating system, securing the application, encrypting data at rest and in transit, configuring firewalls, managing identities and access controls, and backing up data." },
+          { q: "List two examples each of IaaS, PaaS, and SaaS.", a: "IaaS: AWS EC2 (virtual machines), Google Cloud Storage (object storage). PaaS: Heroku (application deployment platform), AWS RDS (managed database). SaaS: Microsoft 365 (productivity suite), Salesforce (CRM). Each level abstracts more infrastructure management away from the customer." },
+          { q: "What does 'serverless computing' mean and which service model does it relate to?", a: "Serverless computing (e.g., AWS Lambda, Azure Functions) is an extreme form of PaaS/SaaS where the customer writes small functions triggered by events — there are no servers to manage, no scaling to configure. The cloud provider handles all execution infrastructure. You are billed per function invocation and execution time, not for idle servers." },
+          { q: "A company stores sensitive HR data in a SaaS HR platform. Who is responsible for encrypting this data?", a: "The shared responsibility in SaaS puts data protection on the customer. While the SaaS provider encrypts data at the infrastructure level, the customer is responsible for: ensuring encryption-at-rest is enabled in platform settings, managing access controls (who can view HR data), enabling MFA for all HR accounts, and reviewing the provider's compliance certifications (SOC 2, ISO 27001) to verify their security controls." }
+        ]
+      },
+      {
+        short: "Virtualisation & Containers",
+        subtitle: "3.1 Hypervisors · 3.2 Virtual Machines · 3.3 Docker Containers · 3.4 Kubernetes",
+        notes: [
+          { title: "Virtualisation & Hypervisors", body: "Virtualisation abstracts hardware to allow multiple VMs on one physical host. <strong>Type 1 (bare-metal)</strong>: runs directly on hardware (VMware ESXi, Microsoft Hyper-V, KVM). <strong>Type 2 (hosted)</strong>: runs on a host OS (VirtualBox, VMware Workstation). Type 1 is used in production cloud environments — better performance, lower overhead." },
+          { title: "Virtual Machines (VMs)", body: "Each VM has its own full OS, kernel, libraries, and applications — completely isolated. Snapshots enable rollback. <strong>Drawbacks</strong>: slow to start (minutes), large on disk (GBs), significant CPU/RAM overhead per VM. Live migration moves running VMs between hosts with no downtime (vSphere vMotion, KVM virsh migrate)." },
+          { title: "Docker Containers", body: "Containers share the host OS kernel — only the application and its libraries are packaged. <strong>Docker image</strong>: layered, immutable snapshot. <strong>Docker container</strong>: running instance. <strong>Dockerfile</strong>: build instructions. Benefits: start in seconds, MBs in size, consistent environment from dev to production. Isolation via Linux namespaces and cgroups." },
+          { title: "Kubernetes (K8s)", body: "Container orchestration platform. Manages deployment, scaling, and healing of containerised applications across a cluster. Key concepts: <strong>Pod</strong> (one or more containers), <strong>Deployment</strong> (manages replicas), <strong>Service</strong> (stable network endpoint), <strong>Ingress</strong> (HTTP routing), <strong>Namespace</strong> (isolation). Self-healing: restarts failed pods automatically." }
+        ],
+        summary: "Type 1 hypervisors run VMs directly on hardware — full OS isolation, heavy. Containers share the kernel — lightweight, fast, portable. Docker packages apps as images; Kubernetes orchestrates containers at scale with self-healing and auto-scaling.",
+        sumCards: [
+          { label: "Hypervisor Types", content: "Type 1: bare-metal (ESXi, KVM) — production\nType 2: hosted (VirtualBox) — desktop" },
+          { label: "VM vs Container", content: "VM: full OS, slow, GBs, strong isolation\nContainer: shared kernel, fast, MBs, app isolation" },
+          { label: "Docker Concepts", content: "Image: immutable snapshot · Container: running instance · Dockerfile: build script" },
+          { label: "Kubernetes", content: "Pod · Deployment · Service · Ingress · Self-healing" }
+        ],
+        qa: [
+          { q: "What is the main difference between a Type 1 and Type 2 hypervisor?", a: "A Type 1 hypervisor (bare-metal) runs directly on the physical hardware without a host OS, making it faster and more efficient — used in production environments (VMware ESXi, Microsoft Hyper-V, KVM). A Type 2 hypervisor runs as an application on top of an existing OS (VirtualBox on Windows) — easier to set up but has more overhead, typically used for development and testing." },
+          { q: "How do containers differ from virtual machines in terms of isolation and resource usage?", a: "VMs run a complete guest OS including kernel — each VM is fully isolated but uses gigabytes of RAM and takes minutes to start. Containers share the host OS kernel — they only package the app and its libraries using Linux namespaces for process/filesystem isolation and cgroups for resource limits. Containers are MBs in size, start in seconds, and run many more instances on the same hardware, but share the kernel (less isolation)." },
+          { q: "What is a Dockerfile and what does it contain?", a: "A Dockerfile is a text file with instructions to build a Docker image. It typically contains: FROM (base image, e.g., FROM python:3.11), RUN (commands to execute during build, e.g., pip install), COPY (copy files into image), ENV (environment variables), EXPOSE (document port), and CMD/ENTRYPOINT (default command to run when container starts)." },
+          { q: "Explain what a Kubernetes Pod is and how it differs from a container.", a: "A Pod is the smallest deployable unit in Kubernetes — it wraps one or more tightly coupled containers that share the same network namespace and storage volumes. All containers in a Pod share an IP address and can communicate via localhost. Typically, one main application container + optional sidecar containers (e.g., logging agent) form a Pod." },
+          { q: "What is Kubernetes self-healing and why does it matter for production systems?", a: "If a container or Pod crashes, Kubernetes automatically restarts it to match the desired state defined in the Deployment spec. If a node fails, Kubernetes reschedules affected Pods onto healthy nodes. This means operations teams don't need to monitor and restart crashed processes manually — the system maintains availability without human intervention, improving uptime and reducing operational burden." }
+        ]
+      },
+      {
+        short: "Cloud Storage & Databases",
+        subtitle: "4.1 Object Storage · 4.2 Block & File Storage · 4.3 Cloud Databases · 4.4 Data Consistency",
+        notes: [
+          { title: "Object Storage", body: "Stores data as objects (file + metadata + unique ID). Flat namespace — no directory hierarchy. <strong>AWS S3</strong>, <strong>Azure Blob Storage</strong>, <strong>GCS</strong>. Best for: unstructured data (images, videos, backups, logs). Massive scalability. Accessed via HTTP API (GET/PUT). Versioning, lifecycle policies, cross-region replication." },
+          { title: "Block & File Storage", body: "<strong>Block storage</strong>: raw block devices attached to VMs (AWS EBS). Data stored in fixed-size blocks — OS and file system manage it. Best for: databases, boot volumes. Low latency. <strong>File storage</strong>: NFS/SMB shared file systems (AWS EFS, Azure Files). Multiple VMs can mount same share. Best for: shared application data, home directories." },
+          { title: "Cloud Databases", body: "<ul><li><strong>Relational (RDS)</strong>: AWS RDS (MySQL, PostgreSQL, Aurora) — ACID transactions, SQL</li><li><strong>NoSQL Document</strong>: MongoDB Atlas, AWS DynamoDB — JSON documents, flexible schema, horizontal scaling</li><li><strong>In-memory</strong>: AWS ElastiCache (Redis) — microsecond latency, session caching</li><li><strong>Data Warehouse</strong>: AWS Redshift, BigQuery — columnar, petabyte-scale analytics</li></ul>" },
+          { title: "CAP Theorem & Consistency", body: "CAP theorem: a distributed system can guarantee at most two of: <strong>Consistency</strong> (all nodes see same data), <strong>Availability</strong> (every request gets a response), <strong>Partition tolerance</strong> (works despite network splits). Since network partitions are unavoidable, choose: CP (consistent, may be unavailable — e.g., MongoDB) or AP (available, may be stale — e.g., DynamoDB in eventual consistency mode)." }
+        ],
+        summary: "Object storage (S3) handles unstructured data at scale. Block storage (EBS) is for databases and VMs. Cloud databases range from managed SQL (RDS) to NoSQL (DynamoDB) to analytics (Redshift). CAP theorem forces trade-offs between consistency and availability in distributed systems.",
+        sumCards: [
+          { label: "Storage Types", content: "Object (S3): files+metadata · Block (EBS): raw disk · File (EFS): shared NFS" },
+          { label: "Cloud DB Types", content: "Relational (RDS) · NoSQL (DynamoDB) · Cache (Redis) · Warehouse (Redshift)" },
+          { label: "CAP Theorem", content: "Pick 2 of: Consistency / Availability / Partition tolerance" },
+          { label: "S3 Key Features", content: "Flat namespace · HTTP API · Versioning · Lifecycle · Cross-region replication" }
+        ],
+        qa: [
+          { q: "What is the difference between object storage and block storage? When would you use each?", a: "Object storage (S3) stores data as immutable objects accessed via HTTP API with a flat namespace — ideal for images, videos, backups, and static website assets where massive scale is needed. Block storage (EBS) presents raw blocks to an OS, which formats it as a file system — essential for databases, boot volumes, and applications requiring low-latency random read/write access." },
+          { q: "Explain the CAP theorem with a practical cloud example.", a: "CAP: you can only guarantee 2 of Consistency, Availability, Partition tolerance. Since network partitions happen, choose CP or AP. CP example: a banking database (AWS Aurora) — during a network partition, it refuses to respond rather than return stale data (money balance must be accurate). AP example: a shopping cart (DynamoDB eventually consistent) — during partition, it returns possibly stale data but stays available." },
+          { q: "What is the difference between AWS RDS and DynamoDB?", a: "RDS is a managed relational database (MySQL, PostgreSQL) — uses SQL, enforces schemas, ACID transactions, vertical scaling. Best for structured data with complex queries and relationships. DynamoDB is a NoSQL key-value/document database — schema-less, horizontal auto-scaling, single-digit millisecond latency. Best for high-throughput applications with simple access patterns (e.g., user sessions, IoT data)." },
+          { q: "What is S3 versioning and why would you enable it?", a: "S3 versioning preserves every version of every object — when you overwrite or delete an object, the previous versions are retained. Use cases: 1) Accidental deletion recovery — delete just removes the current version, older versions remain. 2) Ransomware protection — attacker can't permanently destroy data. 3) Audit trail — see the history of a configuration file. Versioning increases storage costs but is essential for compliance and data protection." },
+          { q: "When would you choose a data warehouse (Redshift) over a transactional database (RDS)?", a: "Use Redshift for analytical workloads: large-scale aggregations, historical reporting, business intelligence queries scanning billions of rows (e.g., 'total sales by region for the last 5 years'). Redshift uses columnar storage optimised for aggregation. Use RDS for OLTP (Online Transaction Processing): frequent inserts/updates/deletes with ACID guarantees (e.g., processing orders, updating user profiles). They solve fundamentally different problems." }
+        ]
+      },
+      {
+        short: "Cloud Security & Compliance",
+        subtitle: "5.1 Identity & Access Management · 5.2 Data Protection · 5.3 Compliance · 5.4 Incident Response",
+        notes: [
+          { title: "Identity & Access Management (IAM)", body: "<strong>Principle of Least Privilege</strong>: grant only permissions needed for the task. IAM components: <strong>Users</strong> (individual identities), <strong>Groups</strong> (collection of users), <strong>Roles</strong> (temporary credentials for services/federated users), <strong>Policies</strong> (JSON documents defining allow/deny for actions on resources). Enable <strong>MFA</strong> for all privileged accounts. Avoid using root account." },
+          { title: "Data Protection in Cloud", body: "<ul><li><strong>Encryption at rest</strong>: AES-256 for stored data (AWS KMS, Azure Key Vault manage keys)</li><li><strong>Encryption in transit</strong>: TLS 1.2+ for all data movement</li><li><strong>Key management</strong>: customer-managed keys (CMK) vs provider-managed — CMK gives more control</li><li><strong>Data masking/tokenisation</strong>: replace sensitive data with tokens in non-production environments</li></ul>" },
+          { title: "Compliance Frameworks", body: "<ul><li><strong>ISO 27001</strong>: information security management system standard</li><li><strong>SOC 2 Type II</strong>: audited security controls over time</li><li><strong>GDPR</strong>: EU data protection regulation — data residency, right to erasure</li><li><strong>PCI-DSS</strong>: payment card industry standard</li><li><strong>HIPAA</strong>: US healthcare data protection</li></ul>Cloud providers publish compliance reports; customers must ensure their use of cloud services also complies." },
+          { title: "Cloud Security Best Practices", body: "<ul><li>Enable CloudTrail/Activity Logs — log all API calls</li><li>Use Security Groups and Network ACLs to restrict access</li><li>Never embed credentials in code — use IAM roles</li><li>Enable GuardDuty/Defender for threat detection</li><li>Regularly review IAM permissions (access reviews)</li><li>Use private subnets for databases — never expose directly to Internet</li></ul>" }
+        ],
+        summary: "IAM least privilege and MFA are foundational cloud security controls. Encrypt all data at rest (KMS) and in transit (TLS). Compliance frameworks (ISO 27001, GDPR, PCI-DSS) govern cloud data handling. Log all API activity and restrict network access via security groups.",
+        sumCards: [
+          { label: "IAM Principles", content: "Least privilege · MFA on privileged accounts · No root for daily use · Roles over users" },
+          { label: "Encryption", content: "At rest: AES-256 + KMS · In transit: TLS 1.2+ · CMK for compliance" },
+          { label: "Compliance", content: "ISO 27001 · SOC 2 · GDPR · PCI-DSS · HIPAA" },
+          { label: "Security Controls", content: "CloudTrail · Security Groups · GuardDuty · Private subnets · Access reviews" }
+        ],
+        qa: [
+          { q: "What is the principle of least privilege in cloud IAM?", a: "Least privilege means granting a user, application, or service only the minimum permissions required to perform their specific tasks — nothing more. Example: a Lambda function that only reads from S3 should have an IAM role with s3:GetObject permission on that specific bucket only, not s3:* on all buckets. This limits the blast radius of compromised credentials." },
+          { q: "What is the difference between customer-managed keys (CMK) and provider-managed keys in AWS KMS?", a: "With provider-managed keys (AWS-managed), AWS creates, rotates, and manages the key — simpler but less control. With customer-managed keys (CMK), the customer creates the key in KMS, controls the key policy (who can use it), can disable or schedule deletion, and has access to full audit logs. CMK is required for most compliance frameworks where the customer must demonstrate key control." },
+          { q: "A developer accidentally commits AWS credentials to a public GitHub repository. What immediate steps should be taken?", a: "1) Immediately deactivate the exposed access key in IAM console — do not just delete, deactivate first to not break running services. 2) Review CloudTrail logs for any API calls made with those credentials since the commit timestamp. 3) Check for suspicious activity (new IAM users created, S3 buckets made public, EC2 instances launched). 4) Generate new credentials. 5) Add the credentials to .gitignore and use IAM roles or AWS Secrets Manager instead of hardcoded keys." },
+          { q: "What is GDPR and what does it require of cloud deployments handling EU citizen data?", a: "GDPR (General Data Protection Regulation) is EU law governing personal data. Cloud requirements: 1) Data residency — personal data may need to stay within the EU (use EU-region cloud deployments). 2) Right to erasure — system must be able to delete all data for a specific individual on request. 3) Data breach notification — notify supervisory authority within 72 hours. 4) Data Processing Agreements — required with cloud providers acting as data processors." },
+          { q: "Why should databases never be placed in public subnets?", a: "Public subnets have routes to the Internet Gateway — any resource with a public IP is directly reachable from the Internet. A database in a public subnet is exposed to automated scanners, brute-force login attempts, and exploitation of known vulnerabilities. Databases should be in private subnets (no Internet route) — accessible only from application servers in the same VPC. This is defence-in-depth: even if app servers are compromised, the database has an additional network layer." }
+        ]
+      }
+    ]
+  },
+
+  oop: {
+    name: "OOP with Java",
+    accent: "#f59e0b",
+    accent2: "#d97706",
+    accent3: "#fcd34d",
+    comingSoon: true,
+    topics: []
+  }
+};
+
+// ──────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────
+let currentCourse = 'home';
+let currentTopic = null;
+let currentView = 'notes';
+
+// ──────────────────────────────────────────────
+// COURSE SWITCHING
+// ──────────────────────────────────────────────
+function switchCourse(course, tabEl) {
+  currentCourse = course;
+  currentTopic = null;
+  currentView = 'notes';
+
+  // Update tab highlights
+  document.querySelectorAll('.course-tab').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+
+  if (course === 'home') {
+    document.getElementById('sidebarLogo').textContent = 'CS Study Hub';
+    document.getElementById('sidebarTitle').textContent = 'All Courses';
+    document.getElementById('sidebarSub').textContent = '5 courses · click to explore';
+    document.getElementById('viewSwitcher').style.display = 'none';
+    document.getElementById('navList').innerHTML = '';
+    document.documentElement.style.setProperty('--accent', '#6b7280');
+    document.documentElement.style.setProperty('--accent2', '#4b5563');
+    document.documentElement.style.setProperty('--accent3', '#9ca3af');
+    showHome();
+    return;
+  }
+
+  const c = COURSES[course];
+  document.getElementById('sidebarLogo').textContent = 'CS Study Hub';
+  document.getElementById('sidebarTitle').textContent = c.name;
+  document.getElementById('sidebarSub').textContent = c.topics.length + ' topics · click to explore';
+
+  // Update CSS accent colors
+  document.documentElement.style.setProperty('--accent', c.accent);
+  document.documentElement.style.setProperty('--accent2', c.accent2);
+  document.documentElement.style.setProperty('--accent3', c.accent3);
+
+  if (c.comingSoon) {
+    document.getElementById('viewSwitcher').style.display = 'none';
+    document.getElementById('navList').innerHTML = '';
+    showComingSoon(c);
+    return;
+  }
+
+  document.getElementById('viewSwitcher').style.display = 'flex';
+  // Reset view buttons
+  document.querySelectorAll('.vsw-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+
+  buildNav();
+  showCourseWelcome();
+}
+
+function buildNav() {
+  const c = COURSES[currentCourse];
+  const nav = document.getElementById('navList');
+  nav.innerHTML = '';
+  c.topics.forEach((t, i) => {
+    const li = document.createElement('li');
+    li.className = 'nav-item';
+    li.innerHTML = `<span class="nav-num">${String(i+1).padStart(2,'0')}</span><span class="nav-name">${t.short}</span>`;
+    li.onclick = () => loadTopic(i);
+    nav.appendChild(li);
+  });
+}
+
+function setActiveNav(idx) {
+  document.querySelectorAll('.nav-item').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+}
+
+function setView(v, btn) {
+  currentView = v;
+  document.querySelectorAll('.vsw-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (currentTopic !== null) loadTopic(currentTopic);
+  else showCourseWelcome();
+}
+
+// ──────────────────────────────────────────────
+// RENDER FUNCTIONS
+// ──────────────────────────────────────────────
+function showHome() {
+  const main = document.getElementById('mainContent');
+  const courseKeys = ['crypto','forensics','networks','cloud','oop'];
+  let html = `
+    <div class="hero">
+      <div class="hero-eyebrow">Complete Study Resource</div>
+      <h1 class="hero-heading"><span style="color:#a78bfa">CS</span> Study Hub</h1>
+      <p class="hero-desc">5 courses covering Cryptography, Cyber Forensics, Computer Networks, Cloud Computing, and OOP with Java. Select a course from the sidebar to get started.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">5 Courses</span>
+        <span class="hero-tag">28 Topics</span>
+        <span class="hero-tag">Short Notes</span>
+        <span class="hero-tag">Q&A Flashcards</span>
+        <span class="hero-tag">Summary Cards</span>
+      </div>
+    </div>
+    <div class="welcome">
+  `;
+
+  courseKeys.forEach(key => {
+    const c = COURSES[key];
+    const colorMap = { crypto:'var(--crypto-accent)', forensics:'var(--forensics-accent)', networks:'var(--networks-accent)', cloud:'var(--cloud-accent)', oop:'var(--oop-accent)' };
+    const col = colorMap[key];
+    html += `
+      <div class="welcome-section-title">
+        <div class="wst-dot" style="background:${col}"></div>
+        ${c.name}${c.comingSoon ? ' <span style="font-family:DM Mono,monospace;font-size:9px;color:var(--text3)">(coming soon)</span>' : ''}
+      </div>
+      <div class="welcome-grid">
+    `;
+    if (c.comingSoon) {
+      html += `<div class="welcome-card" data-course="${key}" onclick="switchCourse('${key}', document.querySelector('[data-course=${key}]'))">
+        <div class="wc-num wc-locked">COMING SOON</div>
+        <div class="wc-title wc-locked">${c.name} — Topics being prepared</div>
+      </div>`;
+    } else {
+      c.topics.forEach((t, i) => {
+        html += `<div class="welcome-card" data-course="${key}" onclick="switchCourse('${key}', document.querySelector('[data-course=\\'${key}\\']')); setTimeout(()=>loadTopic(${i}),50)">
+          <div class="wc-num">${String(i+1).padStart(2,'0')}</div>
+          <div class="wc-title">${t.short}</div>
+        </div>`;
+      });
+    }
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+  main.innerHTML = html;
+}
+
+function showComingSoon(c) {
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `
+    <div class="hero" style="border-bottom:1px solid var(--border)">
+      <div class="hero-eyebrow">${c.name}</div>
+      <h1 class="hero-heading"><span>${c.name}</span></h1>
+      <p class="hero-desc">This course is currently being prepared. Check back soon!</p>
+    </div>
+    <div class="coming-soon">
+      <div class="coming-soon-icon">🚧</div>
+      <div class="coming-soon-title">Content Coming Soon</div>
+      <div class="coming-soon-desc">We're compiling comprehensive notes, Q&A flashcards, and summary cards for <strong>${c.name}</strong>. This section will be ready shortly.</div>
+    </div>
+  `;
+}
+
+function showCourseWelcome() {
+  const c = COURSES[currentCourse];
+  const main = document.getElementById('mainContent');
+  let html = `
+    <div class="hero">
+      <div class="hero-eyebrow">${c.name}</div>
+      <h1 class="hero-heading"><span>${c.name}</span> Study Guide</h1>
+      <p class="hero-desc">${c.topics.length} topics with notes, Q&A flashcards, and summary cards.</p>
+      <div class="hero-tags">
+        <span class="hero-tag">${c.topics.length} Topics</span>
+        <span class="hero-tag">Short Notes</span>
+        <span class="hero-tag">Q&amp;A Flashcards</span>
+        <span class="hero-tag">Summary Cards</span>
+      </div>
+    </div>
+    <div class="welcome"><div class="welcome-grid">
+  `;
+  c.topics.forEach((t, i) => {
+    html += `<div class="welcome-card" data-course="${currentCourse}" onclick="loadTopic(${i})">
+      <div class="wc-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="wc-title">${t.short}</div>
+    </div>`;
+  });
+  html += `</div></div>`;
+  main.innerHTML = html;
+}
+
+function loadTopic(idx) {
+  currentTopic = idx;
+  setActiveNav(idx);
+  const c = COURSES[currentCourse];
+  const t = c.topics[idx];
+  const main = document.getElementById('mainContent');
+
+  let html = `
+    <div class="hero">
+      <div class="hero-eyebrow">Topic ${String(idx+1).padStart(2,'0')} of ${c.topics.length} — ${c.name}</div>
+      <h1 class="hero-heading"><span>${t.short.split(' ')[0]}</span> ${t.short.split(' ').slice(1).join(' ')}</h1>
+      <p class="hero-desc">${t.subtitle}</p>
+    </div>
+    <div class="content-area">
+  `;
+
+  if (currentView === 'notes') {
+    t.notes.forEach((n, ni) => {
+      html += `
+        <div class="note-block" id="nb-${idx}-${ni}">
+          <div class="note-block-header" onclick="toggleNote('nb-${idx}-${ni}')">
+            <span>${n.title}</span>
+            <span class="nbh-arrow">▼</span>
+          </div>
+          <div class="note-block-body">${n.body}</div>
+        </div>
+      `;
+    });
+    html += `<div class="summary-strip"><strong>Summary:</strong> ${t.summary}</div>`;
+  } else if (currentView === 'qa') {
+    html += `<p style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);margin-bottom:18px;">Click any question to reveal the answer.</p>`;
+    t.qa.forEach((item, qi) => {
+      html += `
+        <div class="qa-card" id="qa-${idx}-${qi}">
+          <div class="qa-question" onclick="toggleQA('qa-${idx}-${qi}')">
+            <span class="qa-qnum">Q${qi+1}</span>
+            <span class="qa-qtext">${item.q}</span>
+            <span class="qa-reveal-hint">reveal ▾</span>
+          </div>
+          <div class="qa-answer">${item.a}</div>
+        </div>
+      `;
+    });
+  } else {
+    html += `<div class="summary-grid">`;
+    t.sumCards.forEach(card => {
+      html += `<div class="sum-card">
+        <div class="sum-card-label">${card.label}</div>
+        <div class="sum-card-content">${card.content}</div>
+      </div>`;
+    });
+    html += `</div>`;
+    html += `<div class="summary-strip"><strong>Summary:</strong> ${t.summary}</div>`;
+  }
+
+  html += `</div>`;
+  main.innerHTML = html;
+  main.scrollTop = 0;
+}
+
+function toggleNote(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function toggleQA(id) {
+  document.getElementById(id).classList.toggle('revealed');
+}
+
+// Init
+showHome();
+</script>
+</body>
+</html>
